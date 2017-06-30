@@ -1,1 +1,489 @@
-webpackJsonp([12],{3:function(e,t){"use strict";e.exports={post:function(e,t,a){var s=a.$http||this.$http,r=a.$message||this.$message,n=t?{requestData:JSON.stringify(t)}:null;return s({method:"POST",url:e,body:n,emulateJSON:!0}).then(function(e){return e.body}).then(function(e){return 200!=e.code&&r({message:e.message,type:"warning"}),e})},postJSON:function(e,t,a){var s=a.$http||this.$http,r=a.$message||this.$message,n=t?t:null;return s({method:"POST",url:e,body:n,emulateJSON:!0}).then(function(e){return e.body}).then(function(e){return 200!=e.code&&r({message:e.message,type:"warning"}),e})},export:function(e,t){var a=e;for(var s in t)a=a.indexOf("?")==-1?a+"?"+s+"="+t[s]:a+"&"+s+"="+t[s];window.location.href=a},message:function(){}}},6:function(e,t){"use strict";e.exports={materialAdd:"/pms/management/material/add.do",materialDelete:"/pms/management/material/delete.do",materialEdit:"/pms/management/material/edit.do",materialShow:"/pms/management/material/show.do",materialList:"/pms/management/material/list.do",materialUnitList:"/pms/management/materialUnit/list.do",materialTypeList:"/pms/management/materialType/list.do",materialUnitAndTypeList:"/pms/management/materialUnitAndType/list.do",materialSettleTypeList:"/pms/management/materialSettleType/list.do",materialUnitAdd:"/pms/management/materialUnit/add.do",materialUnitEdit:"/pms/management/materialUnit/edit.do",materialUnitShow:"/pms/management/materialUnit/show.do",materialUnitDelete:"/pms/management/materialUnit/delete.do",materialTypeAdd:"/pms/management/materialType/add.do",materialTypeDelete:"/pms/management/materialType/delete.do",materialTypeShow:"/pms/management/materialType/show.do",materialTypeEdit:"/pms/management/materialType/edit.do",supplierList:"/pms/management/supplier/list.do",supplierDelete:"/pms/management/supplier/delete.do",supplierEdit:"/pms/management/supplier/edit.do",supplierAdd:"/pms/management/supplier/add.do",supplierShow:"/pms/management/supplier/show.do",userList:"/pms/user/list.do",userDelete:"/pms/user/delete.do",userAddView:"/pms/user/addView.do",userEditView:"/pms/user/editView.do",userEdit:"/pms/user/edit.do",userAdd:"/pms/user/add.do",roleList:"/pms/role/list.do",roleDelete:"/pms/role/delete.do",roleAddView:"/pms/role/addView.do",roleEditView:"/pms/role/editView.do",roleEdit:"/pms/role/edit.do",roleAdd:"/pms/role/add.do",settleOrder:"/pms/report/settle/order.do",settleDetail:"/pms/report/settle/order/detail.do",settleType:"/pms/report/type/list.do",settleTypeDetail:"/pms/report/settle/type/list/detail.do",materialReport:"/pms/report/material/list.do",materialReportDetail:"/pms/report/material/list/detail.do",purchaseList:"/pms/report/purchase/list.do",purchaseListDetail:"/pms/report/purchase/list/detail.do",settlement:"/pms/report/settlement/list.do",settlementDetail:"/pms/report/settlement/list/detail.do"}},532:function(e,t,a){(function(e,s){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=a(7);t.default={data:function(){var e=[{path:"/",name:"首页"},{path:"",name:"基础管理"},{path:"/settings/handleUser/index",name:"员工管理"}];return{crumbs:e,username:"",userList:[],pageData:{pageNo:1,pageSize:10,totalCount:0,totalPage:1}}},methods:{handleSizeChange:function(e){console.log("每页 "+e+" 条"),this.pageData.pageSize=e,this.refresh()},handleCurrentChange:function(e){console.log("当前页: "+e),this.pageData.pageNo=e,this.refresh()},addUser:function(){this.$router.push({path:"/settings/handleUser/add/index",query:{name:"add"}})},userInfo:function(e){this.$router.push({path:"/settings/handleUser/add/index",query:{name:"info",userId:e}})},onSubmit:function(){},deleteUser:function(t){var a=this;this.$confirm("确认删除该员工?","提示",{confirmButtonText:"确定",cancelButtonText:"取消",type:"warning"}).then(function(){var r={userIdStr:t};e.postJSON(s.userDelete,r,a).then(function(e){200==e.code?(a.$message({message:"删除成功",type:"success"}),a.refresh()):a.$message({message:e.message,type:"warning"})})},function(){})},refresh:function(){var t={username:this.username?this.username:"",pageNo:this.pageData.pageNo,pageSize:this.pageData.pageSize};e.postJSON(s.userList,t,this).then(function(e){200==e.code&&(this.userList=e.result.userList,this.pageData.pageNo=e.result.pageNo,this.pageData.pageSize=e.result.pageSize,this.pageData.totalCount=e.result.totalCount,this.pageData.totalPage=e.result.totalPage)})}},created:function(){this.refresh()},computed:(0,r.mapState)({user:function(e){return e.user}})}}).call(t,a(3),a(6))},586:function(e,t,a){t=e.exports=a(4)(),t.push([e.id,"",""])},663:function(e,t,a){var s,r;a(755),s=a(532);var n=a(705);r=s=s||{},"object"!=typeof s.default&&"function"!=typeof s.default||(r=s=s.default),"function"==typeof r&&(r=r.options),r.render=n.render,r.staticRenderFns=n.staticRenderFns,r._scopeId="data-v-8ba17bf6",e.exports=s},705:function(e,t){e.exports={render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("div",[a("common-layout",{attrs:{crumbs:e.crumbs}},[a("div",{staticClass:"content",slot:"content"},[a("div",{staticClass:"search-bar"},[a("el-form",{staticClass:"demo-form-inline",attrs:{inline:!0}},[a("el-form-item",[a("el-input",{directives:[{name:"model",rawName:"v-model",value:e.username,expression:"username"}],attrs:{placeholder:"请输入姓名/账号/手机号"},domProps:{value:e.username},on:{input:function(t){e.username=t}}})],1),e._v(" "),a("el-form-item",[a("el-button",{attrs:{type:"primary"},on:{click:e.refresh}},[e._v("查询")])],1)],1)],1),e._v(" "),a("div",{staticClass:"table-content"},[a("div",{staticClass:"button-bar"},[a("el-button",{attrs:{type:"orange"},on:{click:e.addUser}},[e._v("添加")])],1),e._v(" "),a("el-table",{staticStyle:{width:"100%"},attrs:{data:e.userList,height:"440",border:""}},[a("el-table-column",{attrs:{label:"序号",width:"70"},inlineTemplate:{render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("span",[e._v(e._s(e.$index+1+e.pageData.pageSize*(e.pageData.pageNo-1)))])},staticRenderFns:[]}}),e._v(" "),a("el-table-column",{attrs:{prop:"userName",label:"员工账号","min-width":"100"}}),e._v(" "),a("el-table-column",{attrs:{prop:"userRealname",label:"员工姓名","min-width":"100"}}),e._v(" "),a("el-table-column",{attrs:{prop:"roleName",label:"员工岗位","min-width":"100"}}),e._v(" "),a("el-table-column",{attrs:{prop:"userPhone",label:"手机号码","min-width":"100"}}),e._v(" "),a("el-table-column",{attrs:{context:e._self,label:"操作","min-width":"100"},inlineTemplate:{render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("span",[a("el-button",{attrs:{type:"primary",size:"small"},on:{click:function(t){e.userInfo(e.row.userId)}}},[e._v("查看")]),e._v(" "),a("el-button",{attrs:{type:"primary",size:"small"},on:{click:function(t){e.deleteUser(e.row.userId)}}},[e._v("删除")])],1)},staticRenderFns:[]}})],1),e._v(" "),a("div",{staticClass:"pagination"},[a("el-pagination",{attrs:{"current-page":e.pageData.pageNo,"page-sizes":[10,20,30,40],"page-size":e.pageData.pageSize,layout:"total, sizes, prev, pager, next, jumper",total:e.pageData.totalCount},on:{"size-change":e.handleSizeChange,"current-change":e.handleCurrentChange}})],1)],1)])]),e._v(" "),a("transition",{on:{leave:e.refresh}},[a("router-view")],1)],1)},staticRenderFns:[]}},755:function(e,t,a){var s=a(586);"string"==typeof s&&(s=[[e.id,s,""]]);a(5)(s,{});s.locals&&(e.exports=s.locals)}});
+webpackJsonp([12],{
+
+/***/ 511:
+/***/ (function(module, exports, __webpack_require__) {
+
+	
+	/* styles */
+	__webpack_require__(512)
+
+	var Component = __webpack_require__(434)(
+	  /* script */
+	  __webpack_require__(514),
+	  /* template */
+	  __webpack_require__(515),
+	  /* scopeId */
+	  "data-v-0a396905",
+	  /* cssModules */
+	  null
+	)
+
+	module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 512:
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(513);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	if(content.locals) module.exports = content.locals;
+	// add the styles to the DOM
+	var update = __webpack_require__(432)("675c4154", content, true);
+
+/***/ }),
+
+/***/ 513:
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(426)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".el-tabs[data-v-0a396905]{display:block}.search-bar[data-v-0a396905]{padding-top:0}.search-bar .el-button[data-v-0a396905]{float:left}.search-bar .form-inline[data-v-0a396905]{float:right}", ""]);
+
+	// exports
+
+
+/***/ }),
+
+/***/ 514:
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _vuex = __webpack_require__(443);
+
+	var _moment = __webpack_require__(307);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+		data: function data() {
+			var crumbs = [{ path: '/', name: '首页' }, { path: '/receives/direct', name: '直接新增收货单' }];
+			var formSearch = {
+				date: '',
+				status: '',
+				purchaseno: ''
+			};
+			var tableData = [];
+			var pickerOptions = {
+				shortcuts: [{
+					text: '最近一周',
+					onClick: function onClick(picker) {
+						var end = new Date();
+						var start = new Date();
+						start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+						picker.$emit('pick', [start, end]);
+					}
+				}, {
+					text: '最近一个月',
+					onClick: function onClick(picker) {
+						var end = new Date();
+						var start = new Date();
+						start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+						picker.$emit('pick', [start, end]);
+					}
+				}, {
+					text: '最近三个月',
+					onClick: function onClick(picker) {
+						var end = new Date();
+						var start = new Date();
+						start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+						picker.$emit('pick', [start, end]);
+					}
+				}]
+			};
+			var pageData = {
+				pageNo: 1,
+				pageSize: 10,
+				totalCount: 0,
+				totalPage: 1
+			};
+			return {
+				crumbs: crumbs,
+				formSearch: formSearch,
+				tableData: tableData,
+				pickerOptions: pickerOptions,
+				pageData: pageData,
+				loading: true
+			};
+		},
+
+		methods: {
+			/*提交列表查询*/
+			createRO: function createRO() {
+				this.$router.push({ path: '/receives/direct/create' });
+			},
+			onSubmit: function onSubmit() {
+				this.fetchData();
+			},
+			handleView: function handleView(id) {
+				this.$router.push({ name: 'receivesView', params: { id: id, source: 2 } });
+			},
+
+			/*分页回调*/
+			handleSizeChange: function handleSizeChange(val) {
+				this.pageData.pageSize = val;
+				this.fetchData();
+			},
+			handleCurrentChange: function handleCurrentChange(val) {
+				this.pageData.pageNo = val;
+				this.fetchData();
+			},
+
+			/*表格过滤列回调*/
+			filterStatus: function filterStatus(value, row) {
+				return row.receiptStatus === value;
+			},
+			fetchData: function fetchData() {
+				var _this = this;
+
+				this.loading = true;
+				var requestData = { "filter": this.formSearch.purchaseno, "pageNo": this.pageData.pageNo, "pageSize": this.pageData.pageSize };
+				requestData.startTime = this.formSearch.date.length > 0 && this.formSearch.date[0] ? (0, _moment2.default)(this.formSearch.date[0]).format('YYYY-MM-DD') : '';
+				requestData.endTime = this.formSearch.date.length > 1 && this.formSearch.date[1] ? (0, _moment2.default)(this.formSearch.date[1]).format('YYYY-MM-DD') : '';
+				this.$http({
+					url: '/pms/receipt/direct/list.do',
+					method: 'POST',
+					body: { requestData: JSON.stringify(requestData) },
+					emulateJSON: true
+				}).then(function (res) {
+					return res.body;
+				}).then(function (data) {
+					if (data.code == 200) {
+						_this.tableData = data.result.pmsReceiptOrderVos;
+						_this.pageData.pageNo = data.result.pageNo;
+						_this.pageData.pageSize = data.result.pageSize;
+						_this.pageData.totalCount = data.result.totalCount;
+						_this.pageData.totalPage = data.result.totalPage;
+					} else {
+						_this.tableData = [];
+						_this.$message({
+							message: data.message,
+							type: 'warning'
+						});
+					}
+					_this.loading = false;
+				});
+			},
+
+			/*TABS页面切换回调*/
+			handleChangeTab: function handleChangeTab(tab, event) {
+				if (tab.name == 1) {
+					this.$router.push({ path: '/receives' });
+				}
+			}
+		},
+		created: function created() {
+			this.fetchData();
+		},
+
+		computed: (0, _vuex.mapState)({ user: function user(state) {
+				return state.user;
+			} })
+	};
+
+/***/ }),
+
+/***/ 515:
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('common-layout', {
+	    attrs: {
+	      "crumbs": _vm.crumbs
+	    }
+	  }, [_c('div', {
+	    staticClass: "content",
+	    slot: "content"
+	  }, [_c('div', {
+	    staticClass: "tabs-bar"
+	  }, [_c('el-tabs', {
+	    attrs: {
+	      "type": "card",
+	      "active-name": "2"
+	    },
+	    on: {
+	      "tab-click": _vm.handleChangeTab
+	    }
+	  }, [_c('el-tab-pane', {
+	    attrs: {
+	      "label": "根据采购单收货",
+	      "name": "1"
+	    }
+	  }), _vm._v(" "), _c('el-tab-pane', {
+	    attrs: {
+	      "label": "直接新增收货单",
+	      "name": "2"
+	    }
+	  })], 1)], 1), _vm._v(" "), _c('div', {
+	    staticClass: "search-bar clearfix"
+	  }, [_c('el-button', {
+	    attrs: {
+	      "type": "orange"
+	    },
+	    on: {
+	      "click": _vm.createRO
+	    }
+	  }, [_vm._v("新增收货单")]), _vm._v(" "), _c('el-form', {
+	    staticClass: "form-inline",
+	    attrs: {
+	      "inline": true,
+	      "model": _vm.formSearch
+	    }
+	  }, [_c('el-form-item', [_c('el-date-picker', {
+	    staticStyle: {
+	      "width": "220px"
+	    },
+	    attrs: {
+	      "type": "daterange",
+	      "align": "right",
+	      "placeholder": "选择收货日期范围",
+	      "picker-options": _vm.pickerOptions
+	    },
+	    model: {
+	      value: (_vm.formSearch.date),
+	      callback: function($$v) {
+	        _vm.formSearch.date = $$v
+	      },
+	      expression: "formSearch.date"
+	    }
+	  })], 1), _vm._v(" "), _c('el-form-item', [_c('el-input', {
+	    attrs: {
+	      "placeholder": "请输入采购单号"
+	    },
+	    model: {
+	      value: (_vm.formSearch.purchaseno),
+	      callback: function($$v) {
+	        _vm.formSearch.purchaseno = $$v
+	      },
+	      expression: "formSearch.purchaseno"
+	    }
+	  })], 1), _vm._v(" "), _c('el-form-item', [_c('el-button', {
+	    attrs: {
+	      "type": "primary"
+	    },
+	    on: {
+	      "click": _vm.onSubmit
+	    }
+	  }, [_vm._v("查询")])], 1)], 1)], 1), _vm._v(" "), _c('div', {
+	    staticClass: "table-content"
+	  }, [_c('el-table', {
+	    directives: [{
+	      name: "loading",
+	      rawName: "v-loading",
+	      value: (_vm.loading),
+	      expression: "loading"
+	    }],
+	    staticStyle: {
+	      "width": "100%"
+	    },
+	    attrs: {
+	      "element-loading-text": "玩命加载中",
+	      "data": _vm.tableData,
+	      "height": "442",
+	      "border": ""
+	    }
+	  }, [_c('el-table-column', {
+	    attrs: {
+	      "label": "序号",
+	      "width": "70"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm.$index + 1 + _vm.pageData.pageSize * (_vm.pageData.pageNo - 1)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "purchaseNo",
+	      "label": "采购单号",
+	      "min-width": "150"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "receiveTime",
+	      "label": "收货日期",
+	      "min-width": "120"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm._f("moment")(_vm.row.receiveTime)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "label": "收货人",
+	      "min-width": "120"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm.row.receiverName ? _vm.row.receiverName : '--'))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "receiptStatus",
+	      "label": "状态",
+	      "min-width": "100"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('el-tag', {
+	            attrs: {
+	              "type": _vm.row.receiptStatus == 0 ? 'primary' : 'success',
+	              "close-transition": ""
+	            }
+	          }, [_vm._v(_vm._s(_vm.row.receiptStatus == 0 ? '未收货' : _vm.row.status == 1 ? '已发货未收货' : '已收货'))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "context": _vm._self,
+	      "label": "操作",
+	      "min-width": "100"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_c('el-button', {
+	            attrs: {
+	              "type": "primary",
+	              "size": "small"
+	            },
+	            on: {
+	              "click": function($event) {
+	                _vm.handleView(_vm.row.receiptId)
+	              }
+	            }
+	          }, [_vm._v("查看")])], 1)
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  })], 1), _vm._v(" "), _c('div', {
+	    staticClass: "pagination"
+	  }, [_c('el-pagination', {
+	    attrs: {
+	      "current-page": _vm.pageData.pageNo,
+	      "page-sizes": [10, 20, 30, 40],
+	      "page-size": _vm.pageData.pageSize,
+	      "layout": "total, sizes, prev, pager, next, jumper",
+	      "total": _vm.pageData.totalCount
+	    },
+	    on: {
+	      "size-change": _vm.handleSizeChange,
+	      "current-change": _vm.handleCurrentChange
+	    }
+	  })], 1)], 1)])])
+	},staticRenderFns: []}
+
+/***/ })
+
+});

@@ -1,1 +1,540 @@
-webpackJsonp([27],{3:function(e,t){"use strict";e.exports={post:function(e,t,a){var o=a.$http||this.$http,s=a.$message||this.$message,i=t?{requestData:JSON.stringify(t)}:null;return o({method:"POST",url:e,body:i,emulateJSON:!0}).then(function(e){return e.body}).then(function(e){return 200!=e.code&&s({message:e.message,type:"warning"}),e})},postJSON:function(e,t,a){var o=a.$http||this.$http,s=a.$message||this.$message,i=t?t:null;return o({method:"POST",url:e,body:i,emulateJSON:!0}).then(function(e){return e.body}).then(function(e){return 200!=e.code&&s({message:e.message,type:"warning"}),e})},export:function(e,t){var a=e;for(var o in t)a=a.indexOf("?")==-1?a+"?"+o+"="+t[o]:a+"&"+o+"="+t[o];window.location.href=a},message:function(){}}},522:function(e,t,a){(function(e){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var o=a(7);t.default={data:function(){return{importedData:[],dialogVisible:"",showTemplateLoading:!0,templateUrl:"",uploadDescShow:!1,uploadDesc:""}},methods:{close:function(){this.$router.push("/settings/handleMateriel/index")},handleRemove:function(e,t){this.importedData=[]},handleSuccess:function(t,a,o){200==t.code?e.postJSON("/pms/import/material/template/query.do",{uploadId:t.result},this).then(function(e){this.uploadDescShow=!0,this.uploadDesc="本次导入物料"+e.result.pmsUpload.totalNum+"个，其中成功"+e.result.pmsUpload.successNum+"个，失败"+e.result.pmsUpload.errorNum+"个"}):this.$message({message:t.message,type:"warning"})},handleError:function(e,t,a){this.$message({message:e,type:"warning"}),console.log(e)},handleCancelUpload:function(){this.dialogVisible=!1,this.uploadDescShow=!1,this.importedData=[]},handleConfirmUpload:function(){this.dialogVisible=!1,this.uploadDescShow=!1},loadTemplate:function(){var e=this;this.$http({url:"/pms/download/material/template/export.do",method:"POST"}).then(function(e){return e.body}).then(function(t){200==t.code?(e.showTemplateLoading=!1,e.templateUrl=t.result):e.$message({message:t.message,type:"warning"})})}},created:function(){this.loadTemplate()},computed:(0,o.mapState)({user:function(e){return e.user}})}}).call(t,a(3))},559:function(e,t,a){t=e.exports=a(4)(),t.push([e.id,".po-dialog .el-upload[data-v-0dd32175]{margin:0 auto}.po-dialog .el-alert[data-v-0dd32175]{width:360px;margin:0 auto;margin-top:10px}",""])},655:function(e,t,a){var o,s;a(728),o=a(522);var i=a(675);s=o=o||{},"object"!=typeof o.default&&"function"!=typeof o.default||(s=o=o.default),"function"==typeof s&&(s=s.options),s.render=i.render,s.staticRenderFns=i.staticRenderFns,s._scopeId="data-v-0dd32175",e.exports=o},675:function(e,t){e.exports={render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("el-dialog",{directives:[{name:"model",rawName:"v-model",value:e.dialogVisible,expression:"dialogVisible"}],staticClass:"po-dialog",attrs:{title:"导入物料",size:"small"},domProps:{value:e.dialogVisible},on:{close:e.close,input:function(t){e.dialogVisible=t}}},[a("el-upload",{attrs:{action:"/pms/import/material/template.do",type:"drag",multiple:!1,"on-remove":e.handleRemove,"on-success":e.handleSuccess,"on-error":e.handleError}},[a("i",{staticClass:"el-icon-upload"}),e._v(" "),a("div",{staticClass:"el-dragger__text"},[e._v("将Excel文件拖到此处，或"),a("em",[e._v("点击上传")]),a("p",[e._v("每次导入最多200条")])]),e._v(" "),a("div",{staticClass:"el-upload__tip",slot:"tip"},[e.showTemplateLoading?a("div",{staticClass:"upload-tips"},[a("i",{staticClass:"el-icon-loading"}),e._v("正在生成导入模板...")]):e._e(),e._v(" "),e.showTemplateLoading?e._e():a("div",{staticClass:"upload-tips"},[e._v("仅支持Excel格式，首次使用请先"),a("a",{attrs:{href:e.templateUrl}},[e._v("下载模板")])])])]),e._v(" "),e.uploadDescShow?a("el-alert",{attrs:{title:"导入完成",type:"success",description:e.uploadDesc,"show-icon":""}}):e._e(),e._v(" "),a("div",{staticClass:"dialog-footer",slot:"footer"},[a("el-button",{on:{click:e.handleCancelUpload}},[e._v("取 消")]),e._v(" "),a("el-button",{attrs:{type:"primary"},on:{click:e.handleConfirmUpload}},[e._v("确认导入")])],1)],1)},staticRenderFns:[]}},728:function(e,t,a){var o=a(559);"string"==typeof o&&(o=[[e.id,o,""]]);a(5)(o,{});o.locals&&(e.exports=o.locals)}});
+webpackJsonp([27],{
+
+/***/ 464:
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * Created by zhaochengtao on 2016/12/14.
+	 */
+	module.exports = {
+	    post: function post(url, params, _this) {
+	        var http = _this.$http || this.$http;
+	        var message = _this.$message || this.$message;
+	        var requestData = params ? { requestData: JSON.stringify(params) } : null;
+	        return http({
+	            method: 'POST',
+	            url: url,
+	            body: requestData,
+	            emulateJSON: true
+	        }).then(function (res) {
+	            return res.body;
+	        }).then(function (data) {
+	            if (data.code != 200) {
+	                message({
+	                    message: data.message,
+	                    type: 'warning'
+	                });
+	            }
+	            return data;
+	        });
+	    },
+	    postJSON: function postJSON(url, params, _this) {
+	        var http = _this.$http || this.$http;
+	        var message = _this.$message || this.$message;
+	        var requestData = params ? params : null;
+	        return http({
+	            method: 'POST',
+	            url: url,
+	            body: requestData,
+	            emulateJSON: true
+	        }).then(function (res) {
+	            return res.body;
+	        }).then(function (data) {
+	            if (data.code != 200) {
+	                message({
+	                    message: data.message,
+	                    type: 'warning'
+	                });
+	            }
+	            return data;
+	        });
+	    },
+
+	    /*
+	    * {url} String 请求的报表导出URL
+	    * {params} Object 请求参数
+	    * */
+	    export: function _export(url, params) {
+	        var requestUrl = url;
+	        for (var key in params) {
+	            if (requestUrl.indexOf("?") == -1) {
+	                requestUrl = requestUrl + '?' + key + '=' + params[key];
+	            } else {
+	                requestUrl = requestUrl + '&' + key + '=' + params[key];
+	            }
+	        }
+	        window.location.href = requestUrl;
+	    },
+	    message: function message() {}
+	};
+
+/***/ }),
+
+/***/ 465:
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * Created by zhaochengtao on 2016/12/14.
+	 */
+	module.exports = {
+	    materialAdd: '/pms/management/material/add.do',
+	    materialDelete: '/pms/management/material/delete.do',
+	    materialEdit: '/pms/management/material/edit.do',
+	    materialShow: '/pms/management/material/show.do',
+	    materialList: '/pms/management/material/list.do',
+	    materialUnitList: '/pms/management/materialUnit/list.do',
+	    materialTypeList: '/pms/management/materialType/list.do',
+	    materialUnitAndTypeList: '/pms/management/materialUnitAndType/list.do',
+	    materialSettleTypeList: '/pms/management/materialSettleType/list.do',
+	    materialUnitAdd: '/pms/management/materialUnit/add.do',
+	    materialUnitEdit: '/pms/management/materialUnit/edit.do',
+	    materialUnitShow: '/pms/management/materialUnit/show.do',
+	    materialUnitDelete: '/pms/management/materialUnit/delete.do',
+	    materialTypeAdd: '/pms/management/materialType/add.do',
+	    materialTypeDelete: '/pms/management/materialType/delete.do',
+	    materialTypeShow: '/pms/management/materialType/show.do',
+	    materialTypeEdit: '/pms/management/materialType/edit.do',
+	    supplierList: '/pms/management/supplier/list.do',
+	    supplierDelete: '/pms/management/supplier/delete.do',
+	    supplierEdit: '/pms/management/supplier/edit.do',
+	    supplierAdd: '/pms/management/supplier/add.do',
+	    supplierShow: '/pms/management/supplier/show.do',
+	    userList: '/pms/user/list.do',
+	    userDelete: '/pms/user/delete.do',
+	    userAddView: '/pms/user/addView.do',
+	    userEditView: '/pms/user/editView.do',
+	    userEdit: '/pms/user/edit.do',
+	    userAdd: '/pms/user/add.do',
+	    roleList: '/pms/role/list.do',
+	    roleDelete: '/pms/role/delete.do',
+	    roleAddView: '/pms/role/addView.do',
+	    roleEditView: '/pms/role/editView.do',
+	    roleEdit: '/pms/role/edit.do',
+	    roleAdd: '/pms/role/add.do',
+	    /*报表*/
+	    settleOrder: '/pms/report/settle/order.do',
+	    settleDetail: '/pms/report/settle/order/detail.do',
+	    settleType: '/pms/report/type/list.do',
+	    settleTypeDetail: '/pms/report/settle/type/list/detail.do',
+	    materialReport: '/pms/report/material/list.do',
+	    materialReportDetail: '/pms/report/material/list/detail.do',
+	    purchaseList: '/pms/report/purchase/list.do',
+	    purchaseListDetail: '/pms/report/purchase/list/detail.do',
+	    settlement: '/pms/report/settlement/list.do',
+	    settlementDetail: '/pms/report/settlement/list/detail.do'
+	};
+
+/***/ }),
+
+/***/ 588:
+/***/ (function(module, exports, __webpack_require__) {
+
+	
+	/* styles */
+	__webpack_require__(589)
+
+	var Component = __webpack_require__(434)(
+	  /* script */
+	  __webpack_require__(591),
+	  /* template */
+	  __webpack_require__(592),
+	  /* scopeId */
+	  "data-v-5c73f6ff",
+	  /* cssModules */
+	  null
+	)
+
+	module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 589:
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(590);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	if(content.locals) module.exports = content.locals;
+	// add the styles to the DOM
+	var update = __webpack_require__(432)("689b2163", content, true);
+
+/***/ }),
+
+/***/ 590:
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(426)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".button-bar .el-button[data-v-5c73f6ff]{float:right}.button-bar .el-row[data-v-5c73f6ff]{float:left;line-height:36px}", ""]);
+
+	// exports
+
+
+/***/ }),
+
+/***/ 591:
+/***/ (function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(utils, urls) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _vuex = __webpack_require__(443);
+
+	var _moment = __webpack_require__(307);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+		data: function data() {
+			var crumbs = [{ path: '/', name: '首页' }, { path: '', name: '报表' }, { path: '/reports/materialReports/materialList', name: '物料类别汇总' }];
+			return {
+				crumbs: crumbs,
+				formSearch: {
+					date: [],
+					status: '',
+					purchaseno: ''
+				},
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick: function onClick(picker) {
+							var end = new Date();
+							var start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近一个月',
+						onClick: function onClick(picker) {
+							var end = new Date();
+							var start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+							picker.$emit('pick', [start, end]);
+						}
+					}, {
+						text: '最近三个月',
+						onClick: function onClick(picker) {
+							var end = new Date();
+							var start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				},
+				filter: '',
+				list: [],
+				totalAmount: 0,
+				pageData: {
+					pageNo: 1,
+					pageSize: 10,
+					totalCount: 0,
+					totalPage: 1
+				},
+				loading: true
+			};
+		},
+
+		methods: {
+			onSubmit: function onSubmit() {
+				this.refresh();
+			},
+
+			/*分页回调*/
+			handleSizeChange: function handleSizeChange(val) {
+				console.log('\u6BCF\u9875 ' + val + ' \u6761');
+				this.pageData.pageSize = val;
+				this.refresh();
+			},
+			handleCurrentChange: function handleCurrentChange(val) {
+				console.log('\u5F53\u524D\u9875: ' + val);
+				this.pageData.pageNo = val;
+				this.refresh();
+			},
+			detail: function detail(row) {
+				this.$router.push({
+					path: '/reports/materialReports/materialListDetail',
+					query: {
+						id: row.materialTypeId
+					}
+				});
+			},
+			refresh: function refresh() {
+				this.loading = true;
+				var requestData = {
+					"filter": this.formSearch.purchaseno,
+					"pageNo": this.pageData.pageNo,
+					"pageSize": this.pageData.pageSize
+				};
+				requestData.startTime = this.formSearch.date.length > 0 && this.formSearch.date[0] ? (0, _moment2.default)(this.formSearch.date[0]).format('YYYY-MM-DD') : '';
+				requestData.endTime = this.formSearch.date.length > 1 && this.formSearch.date[1] ? (0, _moment2.default)(this.formSearch.date[1]).format('YYYY-MM-DD') : '';
+				utils.post(urls.materialReport, requestData, this).then(function (data) {
+					if (data.code == 200) {
+						this.pageData.pageNo = data.result.pageNo;
+						this.pageData.pageSize = data.result.pageSize;
+						this.pageData.totalCount = data.result.totalCount;
+						this.pageData.totalPage = data.result.totalPage;
+						this.list = data.result.pmsPurchaseTypeReportVos;
+						this.totalAmount = data.result.totalAmount;
+					}
+					this.loading = false;
+				});
+			},
+			handleExport: function handleExport() {
+				utils.export('/pms/report/material/type/export.do', { "filter": this.formSearch.purchaseno, "startTime": this.formSearch.date.length > 0 && this.formSearch.date[0] ? (0, _moment2.default)(this.formSearch.date[0]).format('YYYY-MM-DD') : '', "endTime": this.formSearch.date.length > 1 && this.formSearch.date[1] ? (0, _moment2.default)(this.formSearch.date[1]).format('YYYY-MM-DD') : '' });
+			}
+		},
+		created: function created() {
+			this.refresh();
+		},
+
+		computed: (0, _vuex.mapState)({ user: function user(state) {
+				return state.user;
+			} })
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(464), __webpack_require__(465)))
+
+/***/ }),
+
+/***/ 592:
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', [_c('common-layout', {
+	    attrs: {
+	      "crumbs": _vm.crumbs
+	    }
+	  }, [_c('div', {
+	    staticClass: "content",
+	    slot: "content"
+	  }, [_c('div', {
+	    staticClass: "search-bar"
+	  }, [_c('el-form', {
+	    staticClass: "demo-form-inline",
+	    attrs: {
+	      "inline": true,
+	      "model": _vm.formSearch
+	    }
+	  }, [_c('el-form-item', [_c('el-date-picker', {
+	    staticStyle: {
+	      "width": "220px"
+	    },
+	    attrs: {
+	      "type": "daterange",
+	      "align": "right",
+	      "placeholder": "选择日期范围",
+	      "picker-options": _vm.pickerOptions
+	    },
+	    model: {
+	      value: (_vm.formSearch.date),
+	      callback: function($$v) {
+	        _vm.formSearch.date = $$v
+	      },
+	      expression: "formSearch.date"
+	    }
+	  })], 1), _vm._v(" "), _c('el-form-item', [_c('el-button', {
+	    attrs: {
+	      "type": "primary"
+	    },
+	    on: {
+	      "click": _vm.onSubmit
+	    }
+	  }, [_vm._v("查询")])], 1)], 1)], 1), _vm._v(" "), _c('div', {
+	    staticClass: "table-content"
+	  }, [_c('div', {
+	    staticClass: "button-bar"
+	  }, [_c('el-button', {
+	    on: {
+	      "click": _vm.handleExport
+	    }
+	  }, [_vm._v("导出")]), _vm._v(" "), _c('el-row', [_c('el-col', {
+	    attrs: {
+	      "span": 24
+	    }
+	  }, [_vm._v("总计："), _c('span', {
+	    staticClass: "orange"
+	  }, [_vm._v("¥" + _vm._s(_vm._f("number")(_vm.totalAmount)))])])], 1)], 1), _vm._v(" "), _c('el-table', {
+	    directives: [{
+	      name: "loading",
+	      rawName: "v-loading",
+	      value: (_vm.loading),
+	      expression: "loading"
+	    }],
+	    staticStyle: {
+	      "width": "100%"
+	    },
+	    attrs: {
+	      "element-loading-text": "玩命加载中",
+	      "data": _vm.list,
+	      "height": "442",
+	      "border": ""
+	    }
+	  }, [_c('el-table-column', {
+	    attrs: {
+	      "label": "序号",
+	      "width": "70"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm.$index + 1 + _vm.pageData.pageSize * (_vm.pageData.pageNo - 1)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "materialTypeName",
+	      "label": "物料类别",
+	      "min-width": "80"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "payment",
+	      "label": "结算金额",
+	      "min-width": "100"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm._f("number")(_vm.row.payment)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "context": _vm._self,
+	      "label": "操作",
+	      "min-width": "80"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_c('el-button', {
+	            attrs: {
+	              "type": "primary",
+	              "size": "small"
+	            },
+	            on: {
+	              "click": function($event) {
+	                _vm.detail(_vm.row)
+	              }
+	            }
+	          }, [_vm._v("查看")])], 1)
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  })], 1), _vm._v(" "), _c('div', {
+	    staticClass: "pagination"
+	  }, [_c('el-pagination', {
+	    attrs: {
+	      "current-page": _vm.pageData.pageNo,
+	      "page-sizes": [10, 20, 30, 40],
+	      "page-size": _vm.pageData.pageSize,
+	      "layout": "total, sizes, prev, pager, next, jumper",
+	      "total": _vm.pageData.totalCount
+	    },
+	    on: {
+	      "size-change": _vm.handleSizeChange,
+	      "current-change": _vm.handleCurrentChange
+	    }
+	  })], 1)], 1)])]), _vm._v(" "), _c('transition', {
+	    on: {
+	      "leave": _vm.refresh
+	    }
+	  }, [_c('router-view')], 1)], 1)
+	},staticRenderFns: []}
+
+/***/ })
+
+});

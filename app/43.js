@@ -1,1 +1,446 @@
-webpackJsonp([43],{495:function(t,e,a){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}Object.defineProperty(e,"__esModule",{value:!0});var r=a(7),s=a(1);n(s);e.default={data:function(){var t={status:""},e=[],a={},n={},r="";return{formSearch:t,tableData:e,orderData:a,pmsSettlementAmountVo:n,receiptId:r}},methods:{handleBackToList:function(){this.$router.go(-1)},handlePrint:function(){window.print()},fetchData:function(){var t=this,e={receiptId:this.receiptId,settlementReceiver:this.formSearch.status};this.$http({url:"/pms/settlement/order/data.do",method:"POST",body:{requestData:JSON.stringify(e)},emulateJSON:!0}).then(function(t){return t.body}).then(function(e){200==e.code?(t.orderData.purchaseTime=e.result.purchaseTime,t.orderData.purchaseNo=e.result.purchaseNo,t.orderData.receivedTime=e.result.receivedTime,t.orderData.receiverName=e.result.receiverName):t.$message({message:e.message,type:"warning"})}),this.$http({url:"/pms/settlement/result/list.do",method:"POST",body:{requestData:JSON.stringify(e)},emulateJSON:!0}).then(function(t){return t.body}).then(function(e){200==e.code?(t.tableData=e.result.pmsSettlementResultVos,t.pmsSettlementAmountVo=e.result.pmsSettlementAmountVo):(t.tableData=[],t.$message({message:e.message,type:"warning"}))})}},created:function(){this.receiptId=this.$route.params.id,this.fetchData()},computed:(0,r.mapState)({user:function(t){return t.user}})}},547:function(t,e,a){e=t.exports=a(4)(),e.push([t.id,".table-content[data-v-00b85842]{width:1000px;margin:0 auto}.order-bar[data-v-00b85842]{color:#99a9bf;font-size:18px;padding:20px 0}.order-bar .right[data-v-00b85842]{font-size:14px}.button-bar .form-filter[data-v-00b85842]{float:right}.button-bar .form-filter .el-form-item[data-v-00b85842]{margin-bottom:0}.button-bar .form-filter .el-select[data-v-00b85842]{width:110px}.submit-con[data-v-00b85842]{padding:20px 0;color:#475669}.submit-con .orange[data-v-00b85842]{color:#f60}.submit-con .left[data-v-00b85842],.submit-con .middle[data-v-00b85842]{line-height:36px;height:36px}.submit-con .middle[data-v-00b85842]{text-align:center}.submit-con .middle .tooltips[data-v-00b85842]{padding-left:10px}.submit-con .right[data-v-00b85842]{text-align:right}",""])},629:function(t,e,a){var n,r;a(716),n=a(495);var s=a(665);r=n=n||{},"object"!=typeof n.default&&"function"!=typeof n.default||(r=n=n.default),"function"==typeof r&&(r=r.options),r.render=s.render,r.staticRenderFns=s.staticRenderFns,r._scopeId="data-v-00b85842",t.exports=n},665:function(t,e){t.exports={render:function(){var t=this,e=t.$createElement,a=t._self._c||e;return a("div",{staticClass:"content",slot:"content"},[a("div",{staticClass:"table-content"},[a("div",{staticClass:"order-bar"},[a("el-row",[a("el-col",{attrs:{span:12}},[a("div",{staticClass:"grid-content left"},[t._v("结算记录")])]),t._v(" "),a("el-col",{attrs:{span:12}},[a("div",{staticClass:"grid-content right"},[a("el-row",[a("el-col",{attrs:{span:12}},[t._v("采购单号："+t._s(t.orderData.purchaseNo))]),t._v(" "),a("el-col",{attrs:{span:12}},[t._v("结清时间："+t._s(t._f("moment")(t.orderData.receivedTime)))])],1),t._v(" "),a("el-row",[a("el-col",{attrs:{span:24}},[t._v("结算人："+t._s(t.orderData.receiverName))])],1)],1)])],1)],1),t._v(" "),a("div",{staticClass:"button-bar"},[a("el-button",{on:{click:t.handleBackToList}},[t._v("返回")]),t._v(" "),a("el-button",{on:{click:t.handlePrint}},[t._v("打印")])],1),t._v(" "),a("el-table",{staticStyle:{width:"100%"},attrs:{data:t.tableData,border:""}},[a("el-table-column",{attrs:{type:"index",label:"序",width:"55"}}),t._v(" "),a("el-table-column",{attrs:{prop:"supplierName",label:"供应商名称","min-width":"120"}}),t._v(" "),a("el-table-column",{attrs:{prop:"purchaserName",label:"采购员","min-width":"100"}}),t._v(" "),a("el-table-column",{attrs:{prop:"totalPayment",label:"需付金额","min-width":"100"},inlineTemplate:{render:function(){var t=this,e=t.$createElement,a=t._self._c||e;return a("span",[t._v(t._s(t._f("number")(t.row.totalPayment)))])},staticRenderFns:[]}}),t._v(" "),a("el-table-column",{attrs:{prop:"realPayment",label:"实付金额","min-width":"100"},inlineTemplate:{render:function(){var t=this,e=t.$createElement,a=t._self._c||e;return a("span",[t._v(t._s(t._f("number")(t.row.realPayment)))])},staticRenderFns:[]}}),t._v(" "),a("el-table-column",{attrs:{prop:"settlementTypeName",label:"支付方式","min-width":"100"}}),t._v(" "),a("el-table-column",{attrs:{prop:"settlementReceiver",label:"结算对象","min-width":"100"},inlineTemplate:{render:function(){var t=this,e=t.$createElement,a=t._self._c||e;return a("el-tag",{attrs:{type:0==t.row.settlementReceiver?"primary":"success","close-transition":""}},[t._v(t._s(0==t.row.settlementReceiver?"采购员":"供应商"))])},staticRenderFns:[]}}),t._v(" "),a("el-table-column",{attrs:{prop:"settlementTime",label:"结算时间","min-width":"100"},inlineTemplate:{render:function(){var t=this,e=t.$createElement,a=t._self._c||e;return a("span",[t._v(t._s(t._f("moment")(t.row.settlementTime)))])},staticRenderFns:[]}})],1),t._v(" "),a("div",{staticClass:"submit-con"},[a("el-row",{staticClass:"row-bg",attrs:{type:"flex",justify:"space-between"}},[a("el-col",{attrs:{span:4}},[a("div",{staticClass:"grid-content left"},[t._v("\n\t\t\t\t\t\t总计："),a("span",{staticClass:"orange"},[t._v(t._s(t.pmsSettlementAmountVo.totalPayment))]),t._v("元\n\t\t\t\t\t")])]),t._v(" "),a("el-col",{attrs:{span:4}},[a("div",{staticClass:"grid-content left"},[t._v("\n\t\t\t\t\t\t实付："),a("span",{staticClass:"orange"},[t._v(t._s(t.pmsSettlementAmountVo.payment))]),t._v("元\n\t\t\t\t\t")])]),t._v(" "),a("el-col",{attrs:{span:4}},[a("div",{staticClass:"grid-content left"},[t._v("\n\t\t\t\t\t\t数量："),a("span",{staticClass:"orange"},[t._v(t._s(t.pmsSettlementAmountVo.purchaseCount))]),t._v("项\n\t\t\t\t\t")])]),t._v(" "),a("el-col",{attrs:{span:12}})],1)],1)],1)])},staticRenderFns:[]}},716:function(t,e,a){var n=a(547);"string"==typeof n&&(n=[[t.id,n,""]]);a(5)(n,{});n.locals&&(t.exports=n.locals)}});
+webpackJsonp([43],{
+
+/***/ 464:
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * Created by zhaochengtao on 2016/12/14.
+	 */
+	module.exports = {
+	    post: function post(url, params, _this) {
+	        var http = _this.$http || this.$http;
+	        var message = _this.$message || this.$message;
+	        var requestData = params ? { requestData: JSON.stringify(params) } : null;
+	        return http({
+	            method: 'POST',
+	            url: url,
+	            body: requestData,
+	            emulateJSON: true
+	        }).then(function (res) {
+	            return res.body;
+	        }).then(function (data) {
+	            if (data.code != 200) {
+	                message({
+	                    message: data.message,
+	                    type: 'warning'
+	                });
+	            }
+	            return data;
+	        });
+	    },
+	    postJSON: function postJSON(url, params, _this) {
+	        var http = _this.$http || this.$http;
+	        var message = _this.$message || this.$message;
+	        var requestData = params ? params : null;
+	        return http({
+	            method: 'POST',
+	            url: url,
+	            body: requestData,
+	            emulateJSON: true
+	        }).then(function (res) {
+	            return res.body;
+	        }).then(function (data) {
+	            if (data.code != 200) {
+	                message({
+	                    message: data.message,
+	                    type: 'warning'
+	                });
+	            }
+	            return data;
+	        });
+	    },
+
+	    /*
+	    * {url} String 请求的报表导出URL
+	    * {params} Object 请求参数
+	    * */
+	    export: function _export(url, params) {
+	        var requestUrl = url;
+	        for (var key in params) {
+	            if (requestUrl.indexOf("?") == -1) {
+	                requestUrl = requestUrl + '?' + key + '=' + params[key];
+	            } else {
+	                requestUrl = requestUrl + '&' + key + '=' + params[key];
+	            }
+	        }
+	        window.location.href = requestUrl;
+	    },
+	    message: function message() {}
+	};
+
+/***/ }),
+
+/***/ 465:
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * Created by zhaochengtao on 2016/12/14.
+	 */
+	module.exports = {
+	    materialAdd: '/pms/management/material/add.do',
+	    materialDelete: '/pms/management/material/delete.do',
+	    materialEdit: '/pms/management/material/edit.do',
+	    materialShow: '/pms/management/material/show.do',
+	    materialList: '/pms/management/material/list.do',
+	    materialUnitList: '/pms/management/materialUnit/list.do',
+	    materialTypeList: '/pms/management/materialType/list.do',
+	    materialUnitAndTypeList: '/pms/management/materialUnitAndType/list.do',
+	    materialSettleTypeList: '/pms/management/materialSettleType/list.do',
+	    materialUnitAdd: '/pms/management/materialUnit/add.do',
+	    materialUnitEdit: '/pms/management/materialUnit/edit.do',
+	    materialUnitShow: '/pms/management/materialUnit/show.do',
+	    materialUnitDelete: '/pms/management/materialUnit/delete.do',
+	    materialTypeAdd: '/pms/management/materialType/add.do',
+	    materialTypeDelete: '/pms/management/materialType/delete.do',
+	    materialTypeShow: '/pms/management/materialType/show.do',
+	    materialTypeEdit: '/pms/management/materialType/edit.do',
+	    supplierList: '/pms/management/supplier/list.do',
+	    supplierDelete: '/pms/management/supplier/delete.do',
+	    supplierEdit: '/pms/management/supplier/edit.do',
+	    supplierAdd: '/pms/management/supplier/add.do',
+	    supplierShow: '/pms/management/supplier/show.do',
+	    userList: '/pms/user/list.do',
+	    userDelete: '/pms/user/delete.do',
+	    userAddView: '/pms/user/addView.do',
+	    userEditView: '/pms/user/editView.do',
+	    userEdit: '/pms/user/edit.do',
+	    userAdd: '/pms/user/add.do',
+	    roleList: '/pms/role/list.do',
+	    roleDelete: '/pms/role/delete.do',
+	    roleAddView: '/pms/role/addView.do',
+	    roleEditView: '/pms/role/editView.do',
+	    roleEdit: '/pms/role/edit.do',
+	    roleAdd: '/pms/role/add.do',
+	    /*报表*/
+	    settleOrder: '/pms/report/settle/order.do',
+	    settleDetail: '/pms/report/settle/order/detail.do',
+	    settleType: '/pms/report/type/list.do',
+	    settleTypeDetail: '/pms/report/settle/type/list/detail.do',
+	    materialReport: '/pms/report/material/list.do',
+	    materialReportDetail: '/pms/report/material/list/detail.do',
+	    purchaseList: '/pms/report/purchase/list.do',
+	    purchaseListDetail: '/pms/report/purchase/list/detail.do',
+	    settlement: '/pms/report/settlement/list.do',
+	    settlementDetail: '/pms/report/settlement/list/detail.do'
+	};
+
+/***/ }),
+
+/***/ 660:
+/***/ (function(module, exports, __webpack_require__) {
+
+	
+	/* styles */
+	__webpack_require__(661)
+
+	var Component = __webpack_require__(434)(
+	  /* script */
+	  __webpack_require__(663),
+	  /* template */
+	  __webpack_require__(664),
+	  /* scopeId */
+	  "data-v-229803ec",
+	  /* cssModules */
+	  null
+	)
+
+	module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 661:
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(662);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	if(content.locals) module.exports = content.locals;
+	// add the styles to the DOM
+	var update = __webpack_require__(432)("778f4294", content, true);
+
+/***/ }),
+
+/***/ 662:
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(426)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "", ""]);
+
+	// exports
+
+
+/***/ }),
+
+/***/ 663:
+/***/ (function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(utils, urls) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _methods;
+
+	var _vuex = __webpack_require__(443);
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; } //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    data: function data() {
+	        var crumbs = [{ path: '/', name: '首页' }, { path: '', name: '基础管理' }, { path: '/settings/handleRole/index', name: '岗位管理' }];
+	        return {
+	            crumbs: crumbs,
+	            rolename: '',
+	            roleList: [],
+	            pageData: {
+	                pageNo: 1,
+	                pageSize: 10,
+	                totalCount: 0,
+	                totalPage: 1
+	            }
+	        };
+	    },
+
+	    methods: (_methods = {
+	        /*分页回调*/
+	        handleSizeChange: function handleSizeChange(val) {
+	            console.log('\u6BCF\u9875 ' + val + ' \u6761');
+	            this.pageData.pageSize = val;
+	            this.refresh();
+	        },
+	        handleCurrentChange: function handleCurrentChange(val) {
+	            console.log('\u5F53\u524D\u9875: ' + val);
+	            this.pageData.pageNo = val;
+	            this.refresh();
+	        },
+	        addRole: function addRole() {
+	            this.$router.push({
+	                path: '/settings/handleRole/add/index',
+	                query: {
+	                    name: 'add'
+	                }
+	            });
+	        },
+	        roleInfo: function roleInfo(role) {
+	            this.$router.push({
+	                path: '/settings/handleRole/add/index',
+	                query: {
+	                    name: 'info',
+	                    roleId: role.roleId
+	                }
+	            });
+	        },
+	        onSubmit: function onSubmit() {}
+	    }, _defineProperty(_methods, 'handleSizeChange', function handleSizeChange(val) {
+	        console.log('\u6BCF\u9875 ' + val + ' \u6761');
+	    }), _defineProperty(_methods, 'handleCurrentChange', function handleCurrentChange(val) {
+	        console.log('\u5F53\u524D\u9875: ' + val);
+	    }), _defineProperty(_methods, 'deleteRole', function deleteRole(roleId) {
+	        var that = this;
+	        this.$confirm('确认删除吗').then(function () {
+	            var requestData = { "roleIdStr": roleId };
+	            utils.postJSON(urls.roleDelete, requestData, that).then(function (data) {
+	                if (data.code == 200) {
+	                    that.$message({
+	                        message: "删除成功",
+	                        type: 'success'
+	                    });
+	                    that.refresh();
+	                }
+	            });
+	        }, function () {});
+	    }), _defineProperty(_methods, 'refresh', function refresh() {
+	        var requestData = {
+	            "roleName": this.roleName ? this.roleName : '',
+	            "pageNo": this.pageData.pageNo,
+	            "pageSize": this.pageData.pageSize
+	        };
+	        utils.postJSON(urls.roleList, requestData, this).then(function (data) {
+	            if (data.code == 200) {
+	                this.roleList = data.result.roleList;
+	                this.pageData.pageNo = data.result.pageNo;
+	                this.pageData.pageSize = data.result.pageSize;
+	                this.pageData.totalCount = data.result.totalCount;
+	                this.pageData.totalPage = data.result.totalPage;
+	            }
+	        });
+	    }), _methods),
+	    created: function created() {
+	        this.refresh();
+	    },
+
+	    computed: (0, _vuex.mapState)({ user: function user(state) {
+	            return state.user;
+	        } })
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(464), __webpack_require__(465)))
+
+/***/ }),
+
+/***/ 664:
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', [_c('common-layout', {
+	    attrs: {
+	      "crumbs": _vm.crumbs
+	    }
+	  }, [_c('div', {
+	    staticClass: "content",
+	    slot: "content"
+	  }, [_c('div', {
+	    staticClass: "table-content"
+	  }, [_c('div', {
+	    staticClass: "button-bar"
+	  }, [_c('el-button', {
+	    attrs: {
+	      "type": "orange"
+	    },
+	    on: {
+	      "click": _vm.addRole
+	    }
+	  }, [_vm._v("添加")])], 1), _vm._v(" "), _c('el-table', {
+	    staticStyle: {
+	      "width": "100%"
+	    },
+	    attrs: {
+	      "data": _vm.roleList,
+	      "height": "440",
+	      "border": ""
+	    }
+	  }, [_c('el-table-column', {
+	    attrs: {
+	      "label": "序号",
+	      "width": "70"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm.$index + 1 + _vm.pageData.pageSize * (_vm.pageData.pageNo - 1)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "roleName",
+	      "label": "岗位名称",
+	      "min-width": "80"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "roleDesc",
+	      "label": "权限说明",
+	      "min-width": "100"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "context": _vm._self,
+	      "label": "操作",
+	      "min-width": "80"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_c('el-button', {
+	            attrs: {
+	              "type": "primary",
+	              "size": "small"
+	            },
+	            on: {
+	              "click": function($event) {
+	                _vm.roleInfo(_vm.row)
+	              }
+	            }
+	          }, [_vm._v("查看")])], 1)
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  })], 1), _vm._v(" "), _c('div', {
+	    staticClass: "pagination"
+	  }, [_c('el-pagination', {
+	    attrs: {
+	      "current-page": _vm.pageData.pageNo,
+	      "page-sizes": [10, 20, 30, 40],
+	      "page-size": _vm.pageData.pageSize,
+	      "layout": "total, sizes, prev, pager, next, jumper",
+	      "total": _vm.pageData.totalCount
+	    },
+	    on: {
+	      "size-change": _vm.handleSizeChange,
+	      "current-change": _vm.handleCurrentChange
+	    }
+	  })], 1)], 1)])]), _vm._v(" "), _c('transition', {
+	    on: {
+	      "leave": _vm.refresh
+	    }
+	  }, [_c('router-view')], 1)], 1)
+	},staticRenderFns: []}
+
+/***/ })
+
+});

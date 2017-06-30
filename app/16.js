@@ -1,1 +1,447 @@
-webpackJsonp([16],{3:function(e,t){"use strict";e.exports={post:function(e,t,a){var r=a.$http||this.$http,i=a.$message||this.$message,s=t?{requestData:JSON.stringify(t)}:null;return r({method:"POST",url:e,body:s,emulateJSON:!0}).then(function(e){return e.body}).then(function(e){return 200!=e.code&&i({message:e.message,type:"warning"}),e})},postJSON:function(e,t,a){var r=a.$http||this.$http,i=a.$message||this.$message,s=t?t:null;return r({method:"POST",url:e,body:s,emulateJSON:!0}).then(function(e){return e.body}).then(function(e){return 200!=e.code&&i({message:e.message,type:"warning"}),e})},export:function(e,t){var a=e;for(var r in t)a=a.indexOf("?")==-1?a+"?"+r+"="+t[r]:a+"&"+r+"="+t[r];window.location.href=a},message:function(){}}},6:function(e,t){"use strict";e.exports={materialAdd:"/pms/management/material/add.do",materialDelete:"/pms/management/material/delete.do",materialEdit:"/pms/management/material/edit.do",materialShow:"/pms/management/material/show.do",materialList:"/pms/management/material/list.do",materialUnitList:"/pms/management/materialUnit/list.do",materialTypeList:"/pms/management/materialType/list.do",materialUnitAndTypeList:"/pms/management/materialUnitAndType/list.do",materialSettleTypeList:"/pms/management/materialSettleType/list.do",materialUnitAdd:"/pms/management/materialUnit/add.do",materialUnitEdit:"/pms/management/materialUnit/edit.do",materialUnitShow:"/pms/management/materialUnit/show.do",materialUnitDelete:"/pms/management/materialUnit/delete.do",materialTypeAdd:"/pms/management/materialType/add.do",materialTypeDelete:"/pms/management/materialType/delete.do",materialTypeShow:"/pms/management/materialType/show.do",materialTypeEdit:"/pms/management/materialType/edit.do",supplierList:"/pms/management/supplier/list.do",supplierDelete:"/pms/management/supplier/delete.do",supplierEdit:"/pms/management/supplier/edit.do",supplierAdd:"/pms/management/supplier/add.do",supplierShow:"/pms/management/supplier/show.do",userList:"/pms/user/list.do",userDelete:"/pms/user/delete.do",userAddView:"/pms/user/addView.do",userEditView:"/pms/user/editView.do",userEdit:"/pms/user/edit.do",userAdd:"/pms/user/add.do",roleList:"/pms/role/list.do",roleDelete:"/pms/role/delete.do",roleAddView:"/pms/role/addView.do",roleEditView:"/pms/role/editView.do",roleEdit:"/pms/role/edit.do",roleAdd:"/pms/role/add.do",settleOrder:"/pms/report/settle/order.do",settleDetail:"/pms/report/settle/order/detail.do",settleType:"/pms/report/type/list.do",settleTypeDetail:"/pms/report/settle/type/list/detail.do",materialReport:"/pms/report/material/list.do",materialReportDetail:"/pms/report/material/list/detail.do",purchaseList:"/pms/report/purchase/list.do",purchaseListDetail:"/pms/report/purchase/list/detail.do",settlement:"/pms/report/settlement/list.do",settlementDetail:"/pms/report/settlement/list/detail.do"}},519:function(e,t,a){(function(e,r){"use strict";function i(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(t,"__esModule",{value:!0});var s=a(7),n=a(1),l=i(n);t.default={data:function(){var e=[{path:"/",name:"首页"},{path:"",name:"报表"},{path:"/reports/settlement/settlementList",name:"结算对象汇总"}];return{crumbs:e,formSearch:{date:[],status:"",purchaseno:""},pickerOptions:{shortcuts:[{text:"最近一周",onClick:function(e){var t=new Date,a=new Date;a.setTime(a.getTime()-6048e5),e.$emit("pick",[a,t])}},{text:"最近一个月",onClick:function(e){var t=new Date,a=new Date;a.setTime(a.getTime()-2592e6),e.$emit("pick",[a,t])}},{text:"最近三个月",onClick:function(e){var t=new Date,a=new Date;a.setTime(a.getTime()-7776e6),e.$emit("pick",[a,t])}}]},filter:"",list:[],totalAmount:0,settlementReceiver:"",pageData:{pageNo:1,pageSize:10,totalCount:0,totalPage:1},loading:!0}},methods:{onSubmit:function(){this.refresh()},handleSizeChange:function(e){console.log("每页 "+e+" 条"),this.pageData.pageSize=e,this.refresh()},handleCurrentChange:function(e){console.log("当前页: "+e),this.pageData.pageNo=e,this.refresh()},detail:function(e){this.$router.push({path:"/reports/settlement/settlementDetail",query:{id:e.id,settlementReceiver:e.settlementReceiver}})},refresh:function(){this.loading=!0;var t={settlementReceiver:this.settlementReceiver?this.settlementReceiver:"",pageNo:this.pageData.pageNo,pageSize:this.pageData.pageSize};t.startTime=this.formSearch.date.length>0&&this.formSearch.date[0]?(0,l.default)(this.formSearch.date[0]).format("YYYY-MM-DD"):"",t.endTime=this.formSearch.date.length>1&&this.formSearch.date[1]?(0,l.default)(this.formSearch.date[1]).format("YYYY-MM-DD"):"",e.post(r.settlement,t,this).then(function(e){200==e.code&&(this.pageData.pageNo=e.result.pageNo,this.pageData.pageSize=e.result.pageSize,this.pageData.totalCount=e.result.totalCount,this.pageData.totalPage=e.result.totalPage,this.list=e.result.pmsSettlementReportVos,this.totalAmount=e.result.totalAmount),this.loading=!1})},handleExport:function(){e.export("/pms/report/settlement/export.do",{filter:"",startTime:this.formSearch.date.length>0&&this.formSearch.date[0]?(0,l.default)(this.formSearch.date[0]).format("YYYY-MM-DD"):"",endTime:this.formSearch.date.length>1&&this.formSearch.date[1]?(0,l.default)(this.formSearch.date[1]).format("YYYY-MM-DD"):""})}},created:function(){this.refresh()},computed:(0,s.mapState)({user:function(e){return e.user}})}}).call(t,a(3),a(6))},569:function(e,t,a){t=e.exports=a(4)(),t.push([e.id,".form-search .el-select[data-v-3a1b09c0]{width:110px}.button-bar .el-button[data-v-3a1b09c0]{float:right}.button-bar .el-row[data-v-3a1b09c0]{float:left;line-height:36px}",""])},652:function(e,t,a){var r,i;a(738),r=a(519);var s=a(686);i=r=r||{},"object"!=typeof r.default&&"function"!=typeof r.default||(i=r=r.default),"function"==typeof i&&(i=i.options),i.render=s.render,i.staticRenderFns=s.staticRenderFns,i._scopeId="data-v-3a1b09c0",e.exports=r},686:function(e,t){e.exports={render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("div",[a("common-layout",{attrs:{crumbs:e.crumbs}},[a("div",{staticClass:"content",slot:"content"},[a("div",{staticClass:"search-bar"},[a("el-form",{staticClass:"form-search",attrs:{inline:!0,model:e.formSearch}},[a("el-form-item",[a("el-select",{directives:[{name:"model",rawName:"v-model",value:e.settlementReceiver,expression:"settlementReceiver"}],attrs:{placeholder:"结算对象",clearable:""},domProps:{value:e.settlementReceiver},on:{change:e.onSubmit,input:function(t){e.settlementReceiver=t}}},[a("el-option",{attrs:{label:"采购员",value:"0"}}),e._v(" "),a("el-option",{attrs:{label:"供应商",value:"1"}})],1)],1),e._v(" "),a("el-form-item",[a("el-date-picker",{directives:[{name:"model",rawName:"v-model",value:e.formSearch.date,expression:"formSearch.date"}],staticStyle:{width:"220px"},attrs:{type:"daterange",align:"right",placeholder:"选择日期范围","picker-options":e.pickerOptions},domProps:{value:e.formSearch.date},on:{input:function(t){e.formSearch.date=t}}})],1),e._v(" "),a("el-form-item",[a("el-button",{attrs:{type:"primary"},on:{click:e.onSubmit}},[e._v("查询")])],1)],1)],1),e._v(" "),a("div",{staticClass:"table-content"},[a("div",{staticClass:"button-bar"},[a("el-button",{on:{click:e.handleExport}},[e._v("导出")]),e._v(" "),a("el-row",[a("el-col",{attrs:{span:24}},[e._v("总计："),a("span",{staticClass:"orange"},[e._v("¥"+e._s(e._f("number")(e.totalAmount)))])])],1)],1),e._v(" "),a("el-table",{directives:[{name:"loading",rawName:"v-loading",value:e.loading,expression:"loading"}],staticStyle:{width:"100%"},attrs:{"element-loading-text":"玩命加载中",data:e.list,height:"442",border:""}},[a("el-table-column",{attrs:{label:"序号",width:"70"},inlineTemplate:{render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("span",[e._v(e._s(e.$index+1+e.pageData.pageSize*(e.pageData.pageNo-1)))])},staticRenderFns:[]}}),e._v(" "),a("el-table-column",{attrs:{prop:"cashierName",label:"收款人姓名","min-width":"100"}}),e._v(" "),a("el-table-column",{attrs:{prop:"settlementReceiver",label:"结算对象","min-width":"100"},inlineTemplate:{render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("el-tag",{attrs:{type:0==e.row.settlementReceiver?"primary":"success","close-transition":""}},[e._v(e._s(0==e.row.settlementReceiver?"采购员":"供应商"))])},staticRenderFns:[]}}),e._v(" "),a("el-table-column",{attrs:{prop:"payment",label:"结算金额","min-width":"120"},inlineTemplate:{render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("span",[e._v(e._s(e._f("number")(e.row.payment)))])},staticRenderFns:[]}}),e._v(" "),a("el-table-column",{attrs:{context:e._self,label:"操作","min-width":"80"},inlineTemplate:{render:function(){var e=this,t=e.$createElement,a=e._self._c||t;return a("span",[a("el-button",{attrs:{type:"primary",size:"small"},on:{click:function(t){e.detail(e.row)}}},[e._v("查看")])],1)},staticRenderFns:[]}})],1),e._v(" "),a("div",{staticClass:"pagination"},[a("el-pagination",{attrs:{"current-page":e.pageData.pageNo,"page-sizes":[10,20,30,40],"page-size":e.pageData.pageSize,layout:"total, sizes, prev, pager, next, jumper",total:e.pageData.totalCount},on:{"size-change":e.handleSizeChange,"current-change":e.handleCurrentChange}})],1)],1)])]),e._v(" "),a("transition",{on:{leave:e.refresh}},[a("router-view")],1)],1)},staticRenderFns:[]}},738:function(e,t,a){var r=a(569);"string"==typeof r&&(r=[[e.id,r,""]]);a(5)(r,{});r.locals&&(e.exports=r.locals)}});
+webpackJsonp([16],{
+
+/***/ 533:
+/***/ (function(module, exports, __webpack_require__) {
+
+	
+	/* styles */
+	__webpack_require__(534)
+
+	var Component = __webpack_require__(434)(
+	  /* script */
+	  __webpack_require__(536),
+	  /* template */
+	  __webpack_require__(537),
+	  /* scopeId */
+	  "data-v-791f361c",
+	  /* cssModules */
+	  null
+	)
+
+	module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 534:
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(535);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	if(content.locals) module.exports = content.locals;
+	// add the styles to the DOM
+	var update = __webpack_require__(432)("329223c0", content, true);
+
+/***/ }),
+
+/***/ 535:
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(426)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".table-content[data-v-791f361c]{width:1000px;margin:0 auto}.order-bar[data-v-791f361c]{color:#99a9bf;font-size:18px;padding:20px 0}.order-bar .right[data-v-791f361c]{font-size:14px}.button-bar .form-filter[data-v-791f361c]{float:right}.button-bar .form-filter .el-form-item[data-v-791f361c]{margin-bottom:0}.button-bar .form-filter .el-select[data-v-791f361c]{width:110px}.submit-con[data-v-791f361c]{padding:20px 0;color:#475669}.submit-con .orange[data-v-791f361c]{color:#f60}.submit-con .left[data-v-791f361c],.submit-con .middle[data-v-791f361c]{line-height:36px;height:36px}.submit-con .middle[data-v-791f361c]{text-align:center}.submit-con .middle .tooltips[data-v-791f361c]{padding-left:10px}.submit-con .right[data-v-791f361c]{text-align:right}", ""]);
+
+	// exports
+
+
+/***/ }),
+
+/***/ 536:
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _vuex = __webpack_require__(443);
+
+	var _moment = __webpack_require__(307);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+
+	exports.default = {
+	    data: function data() {
+	        var formSearch = {
+	            status: ''
+	        };
+	        var tableData = [];
+	        var orderData = {};
+	        var pmsSettlementAmountVo = {};
+	        var receiptId = '';
+	        return {
+	            formSearch: formSearch,
+	            tableData: tableData,
+	            orderData: orderData,
+	            pmsSettlementAmountVo: pmsSettlementAmountVo,
+	            receiptId: receiptId
+	        };
+	    },
+
+	    methods: {
+	        handleBackToList: function handleBackToList() {
+	            this.$router.go(-1);
+	        },
+	        handlePrint: function handlePrint() {
+	            window.print();
+	        },
+	        fetchData: function fetchData() {
+	            var _this = this;
+
+	            var requestData = { "receiptId": this.receiptId, "settlementReceiver": this.formSearch.status };
+	            this.$http({
+	                url: '/pms/settlement/order/data.do',
+	                method: 'POST',
+	                body: { requestData: JSON.stringify(requestData) },
+	                emulateJSON: true
+	            }).then(function (res) {
+	                return res.body;
+	            }).then(function (data) {
+	                if (data.code == 200) {
+	                    _this.orderData.purchaseTime = data.result.purchaseTime;
+	                    _this.orderData.purchaseNo = data.result.purchaseNo;
+	                    _this.orderData.receivedTime = data.result.receivedTime;
+	                    _this.orderData.receiverName = data.result.receiverName;
+	                } else {
+	                    _this.$message({
+	                        message: data.message,
+	                        type: 'warning'
+	                    });
+	                }
+	            });
+	            this.$http({
+	                url: '/pms/settlement/result/list.do',
+	                method: 'POST',
+	                body: { requestData: JSON.stringify(requestData) },
+	                emulateJSON: true
+	            }).then(function (res) {
+	                return res.body;
+	            }).then(function (data) {
+	                if (data.code == 200) {
+	                    _this.tableData = data.result.pmsSettlementResultVos;
+	                    _this.pmsSettlementAmountVo = data.result.pmsSettlementAmountVo;
+	                } else {
+	                    _this.tableData = [];
+	                    _this.$message({
+	                        message: data.message,
+	                        type: 'warning'
+	                    });
+	                }
+	            });
+	        }
+	    },
+	    created: function created() {
+	        this.receiptId = this.$route.params.id;
+	        this.fetchData();
+	    },
+
+	    computed: (0, _vuex.mapState)({
+	        user: function user(state) {
+	            return state.user;
+	        }
+	    })
+	};
+
+/***/ }),
+
+/***/ 537:
+/***/ (function(module, exports) {
+
+	module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	  return _c('div', {
+	    staticClass: "content",
+	    slot: "content"
+	  }, [_c('div', {
+	    staticClass: "table-content"
+	  }, [_c('div', {
+	    staticClass: "order-bar"
+	  }, [_c('el-row', [_c('el-col', {
+	    attrs: {
+	      "span": 12
+	    }
+	  }, [_c('div', {
+	    staticClass: "grid-content left"
+	  }, [_vm._v("结算记录")])]), _vm._v(" "), _c('el-col', {
+	    attrs: {
+	      "span": 12
+	    }
+	  }, [_c('div', {
+	    staticClass: "grid-content right"
+	  }, [_c('el-row', [_c('el-col', {
+	    attrs: {
+	      "span": 12
+	    }
+	  }, [_vm._v("采购单号：" + _vm._s(_vm.orderData.purchaseNo))]), _vm._v(" "), _c('el-col', {
+	    attrs: {
+	      "span": 12
+	    }
+	  }, [_vm._v("结清时间：" + _vm._s(_vm._f("moment")(_vm.orderData.receivedTime)))])], 1), _vm._v(" "), _c('el-row', [_c('el-col', {
+	    attrs: {
+	      "span": 24
+	    }
+	  }, [_vm._v("结算人：" + _vm._s(_vm.orderData.receiverName))])], 1)], 1)])], 1)], 1), _vm._v(" "), _c('div', {
+	    staticClass: "button-bar"
+	  }, [_c('el-button', {
+	    on: {
+	      "click": _vm.handleBackToList
+	    }
+	  }, [_vm._v("返回")]), _vm._v(" "), _c('el-button', {
+	    on: {
+	      "click": _vm.handlePrint
+	    }
+	  }, [_vm._v("打印")])], 1), _vm._v(" "), _c('el-table', {
+	    staticStyle: {
+	      "width": "100%"
+	    },
+	    attrs: {
+	      "data": _vm.tableData,
+	      "border": ""
+	    }
+	  }, [_c('el-table-column', {
+	    attrs: {
+	      "type": "index",
+	      "label": "序",
+	      "width": "55"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "supplierName",
+	      "label": "供应商名称",
+	      "min-width": "120"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "purchaserName",
+	      "label": "采购员",
+	      "min-width": "100"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "totalPayment",
+	      "label": "需付金额",
+	      "min-width": "100"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm._f("number")(_vm.row.totalPayment)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "realPayment",
+	      "label": "实付金额",
+	      "min-width": "100"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm._f("number")(_vm.row.realPayment)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "settlementTypeName",
+	      "label": "支付方式",
+	      "min-width": "100"
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "settlementReceiver",
+	      "label": "结算对象",
+	      "min-width": "100"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('el-tag', {
+	            attrs: {
+	              "type": _vm.row.settlementReceiver == 0 ? 'primary' : 'success',
+	              "close-transition": ""
+	            }
+	          }, [_vm._v(_vm._s(_vm.row.settlementReceiver == 0 ? '采购员' : '供应商'))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  }), _vm._v(" "), _c('el-table-column', {
+	    attrs: {
+	      "prop": "settlementTime",
+	      "label": "结算时间",
+	      "min-width": "100"
+	    },
+	    inlineTemplate: {
+	      render: function() {
+	        var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+	          return _c('span', [_vm._v(_vm._s(_vm._f("moment")(_vm.row.settlementTime)))])
+	        
+	      },
+	      staticRenderFns: []
+	    }
+	  })], 1), _vm._v(" "), _c('div', {
+	    staticClass: "submit-con"
+	  }, [_c('el-row', {
+	    staticClass: "row-bg",
+	    attrs: {
+	      "type": "flex",
+	      "justify": "space-between"
+	    }
+	  }, [_c('el-col', {
+	    attrs: {
+	      "span": 4
+	    }
+	  }, [_c('div', {
+	    staticClass: "grid-content left"
+	  }, [_vm._v("\n\t\t\t\t\t\t总计："), _c('span', {
+	    staticClass: "orange"
+	  }, [_vm._v(_vm._s(_vm.pmsSettlementAmountVo.totalPayment))]), _vm._v("元\n\t\t\t\t\t")])]), _vm._v(" "), _c('el-col', {
+	    attrs: {
+	      "span": 4
+	    }
+	  }, [_c('div', {
+	    staticClass: "grid-content left"
+	  }, [_vm._v("\n\t\t\t\t\t\t实付："), _c('span', {
+	    staticClass: "orange"
+	  }, [_vm._v(_vm._s(_vm.pmsSettlementAmountVo.payment))]), _vm._v("元\n\t\t\t\t\t")])]), _vm._v(" "), _c('el-col', {
+	    attrs: {
+	      "span": 4
+	    }
+	  }, [_c('div', {
+	    staticClass: "grid-content left"
+	  }, [_vm._v("\n\t\t\t\t\t\t数量："), _c('span', {
+	    staticClass: "orange"
+	  }, [_vm._v(_vm._s(_vm.pmsSettlementAmountVo.purchaseCount))]), _vm._v("项\n\t\t\t\t\t")])]), _vm._v(" "), _c('el-col', {
+	    attrs: {
+	      "span": 12
+	    }
+	  })], 1)], 1)], 1)])
+	},staticRenderFns: []}
+
+/***/ })
+
+});
