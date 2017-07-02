@@ -6,7 +6,7 @@
 		width: 100%;
 		height: 100%;
 		background-color: #3a4d62;
-		background-image: url(bg3.jpg);
+		background-image: url(bg.jpg);
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: cover;
@@ -17,99 +17,6 @@
 			height: 100%;
 			vertical-align: middle;
 			display: inline-block;
-		}
-	     .header{
-		     position: absolute;
-		     left: 0;
-		     right: 0;
-		     height: 60px;
-		     line-height: 60px;
-		     color: #fff;
-		     text-align: center;
-		     font-size: 28px;
-			.item {
-				position: absolute;
-				top: 0;
-				bottom: 0;
-				z-index: 1;
-			}
-
-			.left {
-				left: 10px;
-				padding-left: 46px;
-				background: url("logo.png") no-repeat center left;
-				background-size: 40px;
-			}
-			.right {
-				right: 10px;
-				i{
-					font-size: 32px;
-					display: inline-block;
-					vertical-align: text-bottom;
-					padding-right: 0px;
-					line-height: 31px;
-				}
-			}
-	     }
-		/*footer*/
-		.footer{
-			display: none;
-			color: #fff;
-			padding-bottom: 20px;
-			position: fixed;
-			bottom: 0;
-			left: 0;
-			right: 0;
-		}
-		@media screen and (min-height:768px){
-			.footer{
-				display: block;
-			}
-		}
-		.footer ul{
-			text-align: center;
-		}
-		.footer ul li{
-			display: inline-block;
-			margin: 0 10px;
-			font-size: 14px;
-			font-size: 1rem;
-			cursor: pointer;
-		}
-		.footer ul li a{
-			height: 21px;
-			display: inline-block;
-			cursor: pointer;
-			color:#fff;
-		}
-		.footer .gov{
-			color:#fff;
-			&:hover{
-				 text-decoration: underline;
-			 }
-		}
-		.footer ul li a:hover{
-			color: #ff8d1c;
-		}
-		.footer p{
-			font-size: 12px;
-			font-size: 0.8rem;
-			text-align: center;
-			margin-top: 14px;
-			margin-top: 1rem;
-			line-height:24px;
-			img{
-				padding: 0 6px;
-				margin-bottom: -3px;
-			}
-		}
-		.thinLine{
-			width: 140px;
-			width: 10rem;
-			height: 1px;
-			background-color: #eaeaea;
-			margin: 0 auto;
-			margin-top: 20px;
 		}
 	}
 	.form-login{
@@ -129,15 +36,8 @@
 		.chrome-hack{
 			display: none;
 		}
-		.el-button--primary:focus, .el-button--primary:hover {
-			background: #475669;
-			border-color: #475669;
-			color: #fff;
-		}
 		.button-login{
 			width: 100%;
-			background-color: #3a4d62;
-			border-color: #3a4d62;
 			padding: 15px 19px;
 		}
 		.left{
@@ -150,18 +50,11 @@
 </style>
 <template>
 	<div class="login">
-		<div class="header">
-			<div class="item left">客到采购管理系统</div>
-			<div class="item right">
-				<i class="icon-nav_ico_phone"></i>
-				<span>400 - 1688 - 927</span>
-			</div>
-		</div>
 		<el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" class="form-login">
-			<h3>登录客到账号</h3>
+			<h3>车联网系统DEMO-Vue</h3>
 			<input type="text" class="chrome-hack">
 			<el-form-item prop="username">
-				<el-input size="large" v-model.trim="ruleForm2.username" placeholder="登录名/手机号/员工号"></el-input>
+				<el-input size="large" v-model.trim="ruleForm2.username" placeholder="登录名/手机号"></el-input>
 			</el-form-item>
 			<el-form-item prop="password">
 				<el-input size="large" type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="请输入密码"></el-input>
@@ -177,21 +70,9 @@
 			</el-form-item>
 
 			<el-form-item>
-				<el-button size="large" type="primary" class="button-login" @click="handleSubmit2" :disabled="loading">{{loginMsg}}</el-button>
+				<el-button size="large" type="primary" class="button-login" @click="handleSubmit" :disabled="loading">{{loginMsg}}</el-button>
 			</el-form-item>
 		</el-form>
-		<div class="footer" id="footer">
-			<ul>
-				<li><a href="http://grkj.cn" target="_blank">关于我们</a></li>|
-				<li><a href="http://ht.kd.cc/agreements/ctrz.html" target="_blank">餐厅入驻</a></li>|
-				<li><a href="http://ht.kd.cc/agreements/fwxy.html" target="_blank">商家服务协议</a></li>|
-				<li><a href="http://ht.kd.cc/agreements/yszc.html" target="_blank">商家隐私政策</a></li>|
-				<li><a href="http://kd.cc/agent.html" target="_blank">代理商入驻</a></li>|
-				<li><a href="http://partner.kd.cc/" target="_blank">代理商后台</a></li>|
-				<li><a href="http://grkj.cn/business.html" target="_blank">联系我们</a></li>
-			</ul>
-			<p>Copyright©2015-2018 KD.CC 版权所有<img src="./police_logo.png"><a class="gov" target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=32059002001294">苏公网安备  32059002001294号</a>&nbsp;&nbsp;&nbsp;&nbsp;苏ICP备14055937号</p>
-		</div>
 	</div>
 </template>
 <script>
@@ -218,7 +99,7 @@
 			  rememberps:false,
 			  password: '',
 			  username: '',
-				captchaObj:{}
+			  captchaObj:{}
 			},
 			rules2: {
 			  password: [
@@ -229,7 +110,7 @@
 			  ]
 			},
 			  loading:false,
-			  loginMsg:"立刻登录"
+			  loginMsg:"登录"
 		  };
 		},
 		methods: {
@@ -237,8 +118,15 @@
 	   	  submit(){
               this.loading = true;
               this.loginMsg = '登录中...';
-	          let validate = this.captchaObj.getValidate();
-              this.$http({
+              var userObj ={};
+              userObj.userRealName = this.ruleForm2.username;
+              userObj.orgName = '车联网简易DEMO';
+              this.SIGNIN(userObj);
+              //this.AUTHORIZE(data.result.pmsModuleList);
+              this.setStorage();
+              this.$router.replace({path: '/'})
+	          //let validate = this.captchaObj.getValidate();
+              /*this.$http({
                   url:'/pms/account/signin.do',
                   method:'POST',
                   body:{
@@ -271,15 +159,14 @@
               }).catch(function(response) {
                   this.loading = false;
                   this.loginMsg = '立刻登录';
-              })
+              })*/
 	   	  },
-		  handleReset2() {
-			this.$refs.ruleForm2.resetFields();
-		  },
-		  handleSubmit2(ev) {
+		  handleSubmit(ev) {
 			this.$refs.ruleForm2.validate((valid) => {
+			    debugger
 			  if (valid) {
-			      if(this.captchaObj && this.captchaObj.getValidate instanceof Function){
+                  this.submit()
+			      /*if(this.captchaObj && this.captchaObj.getValidate instanceof Function){
                       let captCha = this.captchaObj.getValidate();
                       if(captCha){
                           this.submit()
@@ -294,8 +181,7 @@
                           message: '网络异常，请检查网络设置或刷新重试',
                           type: 'error'
                       });
-			      }
-
+			      }*/
 			  } else {
 				console.log('error submit!!');
 				return false;
@@ -304,7 +190,7 @@
 		  },
 		  handleKeyDown(e){
               if(e.keyCode ==13){
-                  this.handleSubmit2()
+                  this.handleSubmit()
               }
 		  },
 			//加载滑块验证码

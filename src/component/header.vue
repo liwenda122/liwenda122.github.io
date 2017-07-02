@@ -7,6 +7,8 @@
 		color: #fff;
 		text-align: center;
 		background: #3a4d62;
+		-webkit-user-select: none;
+		-moz-user-select: none;
 		.item {
 			position: absolute;
 			top: 0;
@@ -56,15 +58,16 @@
 <template>
 	<header class="header">
 		<div class="item left">
-			<router-link slot="left" to="/">客到采购管理系统</router-link>
+			<router-link slot="left" to="/">Connected Car System</router-link>
 		</div>
 		<div class="item info">
 			<i class="icon-nav_ico_shop"></i>
 			<span>{{user.orgName}}</span>
 			<i class="icon-nav_ico_phone"></i>
-			<span>400-1688-927</span>
+			<span>400-8888-888</span>
+
 		</div>
-		<div class="item right" v-if="user.userName">
+		<div class="item right" v-if="user.userRealName">
 			<i class="icon-nav_ico_user"></i><span>{{user.userRealName}}</span><a @click="signout">退出</a>
 		</div>
 	</header>
@@ -87,10 +90,10 @@
 				  cancelButtonText: '取消',
 				  type: 'warning'
 				}).then(() => {
-                    this.$http({
+                    /*this.$http({
                         url:'/pms/account/signout.do',
                         method:'GET'
-                    }).then((res)=>res.body).then((data)=> {})
+                    }).then((res)=>res.body).then((data)=> {})*/
 				   this.SIGNOUT()
 				   this.$router.replace({path: '/login'})
 				}).catch(() => {

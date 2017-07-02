@@ -43,7 +43,7 @@ NProgress.configure({easing: 'ease', speed: 500,showSpinner:false});
 //前端判断用户是否登录
 router.beforeEach(({meta, path}, from, next) => {
     var {auth = true} = meta
-    var isLogin = Boolean(store.state.user.userName) //true用户已登录， false用户未登录
+    var isLogin = Boolean(store.state.user.userRealName) //true用户已登录， false用户未登录
     if (auth && !isLogin && path !== '/login') {
         return next({ path: '/login' })
     }

@@ -27,17 +27,12 @@
                 activePath,
                 menus: [
                     {path: '/', name: '首页', icon: 'icon-toolbar_ico_home',pmsModuleCode:'PMS001',auth:true},
-                    {path: '/purchase', name: '开采购单', icon: 'icon-toolbar_ico_caigoudan',pmsModuleCode:'PMS002',auth:true},
-                    {path: '/receives', name: '收货', icon: 'icon-toolbar_ico_shouhuodan',pmsModuleCode:'PMS003',auth:true},
-                    {path: '/checkout', name: '结算', icon: 'icon-toolbar_ico_jiesuandan',pmsModuleCode:'PMS004',auth:true},
+                    {path: '/purchase', name: '追踪', icon: 'el-icon-search',pmsModuleCode:'PMS002',auth:true},
                     {
-                        path: '/reports', name: '查看报表', icon: 'icon-toolbar_ico_baobiao',
+                        path: '/reports', name: '报表', icon: 'icon-toolbar_ico_baobiao',
                         group:[
-                            {path: '/reports/settleOrder/settleOrderList', name: '结算单汇总'},
-                            {path: '/reports/settleType/settleTypeList', name: '结算方式汇总'},
-                            {path: '/reports/materialReports/materialList', name: '物料类别汇总'},
-                            {path: '/reports/purReports/purchaseList', name: '采购汇总'},
-                            {path: '/reports/settlement/settlementList', name: '结算对象汇总'},
+                            {path: '/reports/settleOrder/settleOrderList', name: 'DTR'},
+                            {path: '/reports/settleType/settleTypeList', name: 'ECharts'},
                         ],
                         pmsModuleCode:'PMS005',
                         auth:true,
@@ -46,12 +41,9 @@
                     {
                         path:'/settings',name: '基础设置', icon: 'icon-toolbar_ico_setting',
                         group: [
-                            {path: '/settings/handlePurchase/index', name: '供应商管理'},
-                            {path: '/settings/handleMateriel/index', name: '物料管理'},
-                            {path: '/settings/handleUnit/index', name: '单位管理'},
-                            {path: '/settings/handleType/index', name: '类别管理'},
-                            {path: '/settings/handleRole/index', name: '岗位管理'},
-                            {path: '/settings/handleUser/index', name: '员工管理'},
+                            {path: '/settings/handleUser/index', name: '司机管理'},
+                            {path: '/settings/handlePurchase/index', name: '设备管理'},
+                            {path: '/settings/handleMateriel/index', name: '车辆管理'},
                         ],
                         pmsModuleCode:'PMS006',
                         auth:true,
@@ -66,16 +58,6 @@
             },
             handleClose(key, keyPath) {
                 console.log(key, keyPath);
-            },
-            handleUserRole(){
-                let modules = this.user.pmsModuleList;
-                var that =this;
-                this.menus.forEach(function(n,key){
-                    let firstIndex = modules.findIndex(module => module.pmsModuleCode == n.pmsModuleCode);
-                    if(firstIndex == -1){
-                        n.auth =false;
-                    }
-                })
             },
             handleActiveMenu(){
                 var that = this;
@@ -112,7 +94,6 @@
             }
         },
         created: function () {
-            this.handleUserRole();
             this.handleActiveMenu();
         },
         computed: mapState({

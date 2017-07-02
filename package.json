@@ -1,11 +1,11 @@
 {
-  "name": "vue-demo",
+  "name": "vue-connected-car",
   "version": "1.0.0",
   "description": "``` vue2 vuex vuerouter elementUI",
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --port 3000",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules",
     "dev2": "node server",
     "dev:dist": "cross-env NODE_ENV=production gulp devDist",
     "dev:test": "gulp devTest",
@@ -59,7 +59,10 @@
     "doc": "docs"
   },
   "element-theme": {
-    "browsers": ["ie > 9", "last 2 versions"],
+    "browsers": [
+      "ie > 9",
+      "last 2 versions"
+    ],
     "out": "./src/theme",
     "config": "./src/element-variables.css",
     "theme": "element-theme-default",

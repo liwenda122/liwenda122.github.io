@@ -115,15 +115,15 @@
 					</router-link>
 				</el-col>
 			</el-row>
-			<span class="teachVideo" @click="showDialog">教程视频</span>
+			<!--<span class="teachVideo" @click="showDialog">教程视频</span>-->
 		</div>
 	</common-layout>
-	<el-dialog v-model="dialogVisible" title="教程视频" @close="closeDialog" size="large" class="indexDialog">
-		<video ref="video1" id="video1" src="http://tbm.alicdn.com/L4gbHiFHyuiwBEQ5M1M/J4b1iin1Vm9UW6mi6Aq%40%40sd.mp4" width="100%" height="453" class="edui-faked-video" controls autobuffer autoplay>
+	<!--<el-dialog v-if="dialogVisible" title="教程视频" @close="closeDialog" size="large" class="indexDialog">
+		<video ref="video1" id="video1" src="" width="100%" height="453" class="edui-faked-video" controls autobuffer autoplay>
 
 		</video>
-		<!--<embed  type="application/x-shockwave-flash" class="edui-faked-video" autoplay="0" pluginspage="http://www.macromedia.com/go/getflashplayer" src="http://tbm.alicdn.com/L4gbHiFHyuiwBEQ5M1M/J4b1iin1Vm9UW6mi6Aq%40%40sd.mp4" width="100%" height="453" wmode="transparent" play="0" loop="true" menu="false" allowscriptaccess="never" allowfullscreen="true" autostart="false">-->
-	</el-dialog>
+		&lt;!&ndash;<embed  type="application/x-shockwave-flash" class="edui-faked-video" autoplay="0" pluginspage="http://www.macromedia.com/go/getflashplayer" src="http://tbm.alicdn.com/L4gbHiFHyuiwBEQ5M1M/J4b1iin1Vm9UW6mi6Aq%40%40sd.mp4" width="100%" height="453" wmode="transparent" play="0" loop="true" menu="false" allowscriptaccess="never" allowfullscreen="true" autostart="false">&ndash;&gt;
+	</el-dialog>-->
 </div>
 </template>
 <script>

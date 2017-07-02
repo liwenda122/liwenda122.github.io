@@ -82,7 +82,6 @@ module.exports = {
             hash:true
         }),
         new webpack.ProvidePlugin({
-            urls:'urls',
             utils:'utils'
         }),
     ],
@@ -90,7 +89,6 @@ module.exports = {
         extensions: ['', '.js', '.vue', '.jsx'], //后缀名自动补全
         alias: {
             vue: 'vue/dist/vue.js', //webpack打包时，需要设置别名
-            urls: ROOT_PATH+'/src/config/urls.js',//url
             utils: ROOT_PATH+'/src/config/utils.js',//util
         }
     },
