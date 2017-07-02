@@ -163,7 +163,6 @@
 	   	  },
 		  handleSubmit(ev) {
 			this.$refs.ruleForm2.validate((valid) => {
-			    debugger
 			  if (valid) {
                   this.submit()
 			      /*if(this.captchaObj && this.captchaObj.getValidate instanceof Function){
