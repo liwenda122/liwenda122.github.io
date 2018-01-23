@@ -23,18 +23,8 @@ export default [
             },
             {
                 path: '/reports',
-                name: "报表",
+                name: "图表",
                 component: resolve => require(['../pages/reports/'], resolve)
-            },
-            {
-                path: '/reports/settleOrder/settleOrderList',
-                name: "结算单汇总",
-                component: resolve => require(['../pages/reports/settleOrder/settleOrderList.vue'], resolve)
-            },
-            {
-                path: '/reports/settleOrder/settleOrderDetail',
-                name: "结算单详情",
-                component: resolve => require(['../pages/reports/settleOrder/settleOrderDetail.vue'], resolve)
             },
             {
                 path: '/settings',

@@ -4,7 +4,7 @@
 <template>
     <el-menu mode="horizontal" unique-opened  menu-trigger="hover" :default-active="activePath" class="el-menu-vertical" :router=true theme="dark" @open="handleOpen"
              @close="handleClose">
-        <div v-for="(item, index) in menus" v-if="!!item.auth" class="items-wrap">
+        <div v-for="(item, index) in menus"  class="items-wrap">
             <el-menu-item :index="item.path" v-if="!item.group">
                 <i :class="item.icon"></i>{{item.name}}
             </el-menu-item>
@@ -29,14 +29,9 @@
                     {path: '/', name: '首页', icon: 'icon-toolbar_ico_home',pmsModuleCode:'PMS001',auth:true},
                     {path: '/purchase', name: '追踪', icon: 'el-icon-search',pmsModuleCode:'PMS002',auth:true},
                     {
-                        path: '/reports', name: '报表', icon: 'icon-toolbar_ico_baobiao',
-                        group:[
-                            {path: '/reports/settleOrder/settleOrderList', name: 'DTR'},
-                            {path: '/reports/settleType/settleTypeList', name: 'ECharts'},
-                        ],
+                        path: '/reports', name: '图表', icon: 'icon-toolbar_ico_baobiao',
                         pmsModuleCode:'PMS005',
-                        auth:true,
-                        isActive:false
+                        auth:true
                     },
                     {
                         path:'/settings',name: '基础设置', icon: 'icon-toolbar_ico_setting',
