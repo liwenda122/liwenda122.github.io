@@ -440,4 +440,85 @@ option = {
                     }
                 ]
 };
+// 异常提醒 横向柱状图
+option = {
+  backgroundColor:"#000a3f",
+     
+      grid: {
+          top: '15%',
+          right: '15%',
+          left: "15%",
+          bottom: '12%'
+      },
+      yAxis: [{
+          name: "异常类型",
+          type: 'category',
+          data: ["连续多天未运营","单日超350km","轨迹异常","纯电行驶","车辆未行驶"],
+          axisLine: {
+              lineStyle: {
+                  color: '#FFFFFF'
+              }
+          },
+          axisLabel: {
+              margin: 10,
+              color: '#e2e9ff',
+              textStyle: {
+                  fontSize: 12
+              },
+          },
+          axisTick: {
+              show: false
+          }
+      }],
+      xAxis: [{
+          name: "车辆数",
+          axisLabel: {
+              formatter: '{value}',
+              color: '#e2e9ff',
+          },
+          axisTick: {
+              show: false
+          },
+          axisLine: {
+              show: true,
+              lineStyle: {
+                  color: '#FFFFFF'
+              }
+          },
+          splitLine: {
+              lineStyle: {
+                  color: 'rgba(255,255,255,0.12)'
+              }
+          }
+      }],
+      series: [{
+          type: 'bar',
+          data: [2000,1520,1850,3400,2756],
+         
+          itemStyle: {
+              normal: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                      offset: 0,
+                      color: 'rgba(0,244,255,1)' // 0% 处的颜色
+                  }, {
+                      offset: 1,
+                      color: 'rgba(0,77,167,1)' // 100% 处的颜色
+                  }], false)
+                
+              }
+          },
+          label: {
+              normal: {
+                  show: true,
+                  lineHeight: 10,
+                  formatter: '{c}',
+                  position: 'right',
+                  textStyle: {
+                      color: '#00D6F9',
+                      fontSize: 12
+                  }
 
+              }
+          }
+      }]
+  };
