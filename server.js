@@ -522,3 +522,102 @@ option = {
           }
       }]
   };
+// 仪表盘 半个
+var value = 68
+var color = new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+    {
+        offset: 0,
+        color: '#2EE5E3',
+    },
+    {
+        offset: 1,
+        color: '#385CF7',
+    },
+]);
+option = {
+    title:{
+       show: true,
+       text:"达标完成率",
+       left:'50%',
+       bottom:'50%',
+       textAlign:'center',
+       textStyle: {
+           color: 'rgba(0,0,0,0.65)',
+           fontSize: '1rem',
+       },
+    },
+    series: [
+        {
+            name: '已到人数',
+            type: 'gauge',
+            radius: '80%',
+            startAngle: 180,
+            endAngle: 0,
+            min: 0,
+            max: 100,
+
+            title: {
+                show: false,
+            },
+            detail: {
+                color:'#1890FF',
+                show: true,
+                fontFamily: '"Microsoft Yahei","微软雅黑"',
+                fontWeight:900,
+                fontSize: '5rem',
+                offsetCenter:[0,'-30%']
+            },
+            axisLine: {
+                roundCap: true,
+                show: true,
+                lineStyle: {
+                    width: 20,
+                    color: [
+                        [
+                            value/100, color
+                        ],
+                        [
+                            1, 'rgba(225,225,225,0.4)'
+                        ]
+                    ],
+                    // shadowColor: 'rgba(0,138,255,0.35)',
+                    // shadowBlur: 5,
+                },
+            },
+            axisTick: {
+                show: false,
+            },
+            axisLabel: {
+                show: false,
+            },
+            pointer: {
+                show:false,
+                width: 20,
+                length: 120,
+            },
+            itemStyle: {
+                color: color,
+                shadowColor: 'rgba(0,138,255,0.45)',
+                shadowBlur: 10,
+                
+                // shadowOffsetX: 2,
+                // shadowOffsetY: 2,
+            },
+            splitLine: {
+                show: false,
+                length: 20,
+                distance: -20,
+                lineStyle: {
+                    color: '#fff',
+                    width: 1,
+                },
+            },
+            data: [
+                {
+                    value: 68,
+                    name: '达标完成率',
+                },
+            ],
+        },
+    ],
+}
