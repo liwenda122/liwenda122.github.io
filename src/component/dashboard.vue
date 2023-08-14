@@ -33,14 +33,14 @@
     <div class="board_two_box" v-if="statusCode === 'loaded'">
       <div class="board_two_left">
         <echarts :options="speedOptions" height="250px" width="250px" :title="$t('mainPage.vehicleSpeed')" />
-        <!-- ...其他内容 ... -->
+        <!-- ...TODO 其他内容 ... -->
       </div>
       <div class="board_two_middle">
-        <!-- ...其他内容 ... -->
+        <!-- ...TODO 其他内容 ... -->
       </div>
       <div class="board_two_left">
         <echarts v-if="judgeVehicleType(dashBoardVehicleInfo.powerType) === 'E'" :options="insEleConsumOptions" height="250px" width="250px" :title="$t('mainPage.InstantaneEleConsum')" />
-        <!-- ...其他内容 ... -->
+        <!-- ...TODO 其他内容 ... -->
       </div>
     </div>
 
@@ -314,7 +314,7 @@ const lightList = computed(() => {
       icon: 'iconyuanguangdeng',
       state: highBeam === 1 && noOffline,
     },
-    // ... 其他车辆灯、门、驻车信号灯项
+    // ... TODO 其他车辆灯、门、驻车信号灯项
   ];
 });
 
@@ -1137,10 +1137,10 @@ const getPcVehicleRealTimeInfo = async () => {
 			data.powerSupplyVolt24V = '-';
 		  } else {
 			// 根据电压值设置颜色
-			// ...
+			// ... TODO 
 		  }
 		  powerSupplyVolt24VChartOptions.series[0].data[0].value = voltageValue;
-		  // ...
+		  // ... TODO 
 
 		  // 处理车速
 		  let speedValue = parseFloat(data.speed);
@@ -1152,7 +1152,7 @@ const getPcVehicleRealTimeInfo = async () => {
 			speedValue = Math.round(speedValue * 10) / 10;
 		  }
 		  speedOptions.series[0].data[0].value = speedValue;
-		  // ...
+		  // ... TODO 
 		}
 
       // 更新数据和图表
