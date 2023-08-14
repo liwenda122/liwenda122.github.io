@@ -1541,6 +1541,173 @@ const visibilityChange = (): void => {
     }
   }
 };
+// 获取充电站树数据
+const getChargerStationTreeData = () => {
+  if ($cache.getCache('HwSyncChargerStationTree')) {
+    const { data } = $cache.getCache('HwSyncChargerStationTree');
+    const stationIdStr = getAllChargerStationIds(data, []).join(',');
+    getChargerStationLonLat(stationIdStr);
+  } else {
+    Service.requestApi('getChargingStationTree', {
+      allStation: true,
+      orgId: null,
+      keywords: '',
+    })
+      .then((res) => {
+        if (res.code === 1) {
+          const stationIdStr = getAllChargerStationIds(res.data, []).join(',');
+          getChargerStationLonLat(stationIdStr);
+          const cacheData = {
+            name: 'HwSyncChargerStationTree',
+            data: res.data,
+          };
+          $cache.setCache('HwSyncChargerStationTree', cacheData);
+        }
+      })
+      .catch(() => {});
+  }
+};
+
+// 获取OCPP充电站树数据
+const getOCPPStationTreeData = () => {
+  if ($cache.getCache('OCPPChargerStationTree')) {
+    const { data } = $cache.getCache('OCPPChargerStationTree');
+    const stationIdStr = getAllChargerStationIds(data, []).join(',');
+    getOCPPStationLonLat(stationIdStr);
+  } else {
+    Service.requestApi('getDepotTree', {
+      keywords: '',
+      queryFiled: 'energyStationName',
+    })
+      .then((res) => {
+        if (res.code === 1) {
+          const stationIdStr = getAllChargerStationIds([res.data], []).join(',');
+          getOCPPStationLonLat(stationIdStr);
+          const cacheData = {
+            name: 'OCPPChargerStationTree',
+            data: [res.data],
+          };
+          $cache.setCache('OCPPChargerStationTree', cacheData);
+        }
+      })
+      .catch(() => {});
+  }
+};
+
+// 遍历数据获取id
+const getAllChargerStationIds = (data: any[], ids: string[]) => {
+  data.forEach((item) => {
+    if (item.objectType === 'EleStation') {
+      ids.push(item.objectId);
+    } else if (item.children && item.children.length > 0) {
+      getAllChargerStationIds(item.children, ids);
+    }
+  });
+  return ids;
+};
+
+// 获取充电站数据
+const getChargerStationLonLat = (idStr: string) => {
+  Service.requestApi('getEleStationMapInfo', { chargeStationIds: idStr })
+    .then((res) => {
+      if (res.code === 1 && res.data.data.length > 0) {
+        const { data } = res.data;
+        chargeStationsList.value = data.filter((charger: any) =>
+          isValidOfLonLat(charger.longitude, charger.latitude)
+        );
+        if (chargeStationsList.value.length > 0) {
+          chargeStationsList.value.forEach((item: any) => {
+            getAddress(item.longitude, item.latitude)
+              .then((res) => {
+                item.address = res.address;
+                const idMarker = `chargerMarker_${item.chargeStationId}`;
+                const marker = MPBMap.getMarkerByType({ id: idMarker })[0];
+                if (marker) {
+                  const element = marker.getElement();
+                  $(element)
+                    .find('.charger_map_address')
+                    .text(item.address);
+                }
+              })
+              .catch(() => {
+                item.address = '-';
+              });
+          });
+        }
+      }
+    })
+    .catch(() => {});
+};
+
+// 获取OCPP充电站数据
+const getOCPPStationLonLat = (idStr: string) => {
+  Service.requestApi('getDepotInfoList', { depotIds: idStr })
+    .then((res) => {
+      if (res.data && res.data.length > 0) {
+        const { data } = res;
+        stationsListOCPP.value = data.filter((charger: any) =>
+          isValidOfLonLat(charger.gpsLongitude, charger.gpsLatitude)
+        );
+        if (stationsListOCPP.value.length > 0) {
+          stationsListOCPP.value.forEach((item: any) => {
+            item.totalCount =
+              item.availableCount +
+              item.offLineCount +
+              item.unavailableCount +
+              item.usingCount -
+              0;
+            item.address = '-';
+            item.gpsLongitude -= 0;
+            item.gpsLatitude -= 0;
+            getAddress(item.gpsLongitude, item.gpsLatitude)
+              .then((res) => {
+                item.address = res.address;
+                const idMarker = `stationOCPPMarker_${item.depotId}`;
+                const marker = MPBMap.getMarkerByType({ id: idMarker })[0];
+                if (marker) {
+                  const element = marker.getElement();
+                  $(element)
+                    .find('.station_OCPP_map_address')
+                    .text(item.address);
+                }
+              })
+              .catch(() => {
+                item.address = '-';
+              });
+          });
+        }
+      }
+    })
+    .catch(() => {});
+};
+
+// 异步解析经纬度
+const getAddress = (lon: number, lat: number) => {
+  return new Promise<{ address: string }>((resolve, reject) => {
+    let addressNew = '';
+    MapApi.getAddressByLonLat(lon, lat)
+      .then((address: string) => {
+        addressNew = address;
+        resolve({ address: addressNew });
+      })
+      .catch(() => {
+        addressNew = '-';
+        reject({ address: addressNew });
+      });
+  });
+};
+// 区域画围栏
+const areaDrawFence = () => {
+  MPBMap.drawFence({
+    fenceShape: 2,
+    fenceState: 'New',
+    fenceType: 'Common',
+    fenceApply: 'special',
+    events: (fence: any) => {
+      filterVehicles(fence);
+    },
+  });
+};
 </script>
 <style lang="less" scoped>
 .vehicle_monitoring_box {
@@ -1731,3 +1898,4 @@ const visibilityChange = (): void => {
   }
 }
 </style>
+
