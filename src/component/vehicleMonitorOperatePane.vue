@@ -1,4 +1,5 @@
 <template>
+  <template>
   <div class="vehicle_monitor_operatePane_box">
     <!-- 右侧列表导出功能 -->
     <svg-icon
@@ -418,993 +419,790 @@
     </transition>
   </div>
 </template>
+<script setup lang="ts">
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { debounce } from 'lodash';
+import echarts from '@/components/Charts';
+import columnPanel from '@/components/ColumnPanel';
+import dashBoard from './dashBoard.vue';
+import progressBar from '@/components/ProgressBar';
+import Service from '@/api/OverseasService';
+import detailsPane from './vehicleDetailsPane.vue';
+import Clickoutside from '@/directive/clickoutside';
+import queryLoading from '@/components/queryLoading';
+import Sortable from 'sortablejs';
+import {
+  formatVehicleEnergyType,
+  setUserGridCookie,
+  getUserGridCookie,
+  formatVehicleName,
+  formatEnergyTypeHover,
+} from '@/utils';
+import { formatVehicleState } from '@/filters';
+import Sortable from 'sortablejs';
+import { debounce } from 'lodash';
 
-<script>
-  import echarts from '@/components/Charts';
-  import columnPanel from '@/components/ColumnPanel';
-  import dashBoard from './dashBoard.vue';
-  import progressBar from '@/components/ProgressBar';
-  import Service from '@/api/OverseasService';
-  import detailsPane from './vehicleDetailsPane.vue';
-  import Clickoutside from '@/directive/clickoutside';
-  import queryLoading from '@/components/queryLoading';
-  import {
-    formatVehicleEnergyType,
-    setUserGridCookie,
-    getUserGridCookie,
-    formatVehicleName,
-    formatEnergyTypeHover,
-  } from '@/utils';
-  import { formatVehicleState } from '@/filters';
-  import Sortable from 'sortablejs';
-  import { debounce } from 'lodash';
+// 数据
+const statusCode = ref('noData');
+const queryStatus = reactive({
+  style: {},
+  setQueryStatus: function (status: string) {
+    return status;
+  },
+});
+const queryStatusTwo = reactive({
+  style: {},
+  setQueryStatus: function (status: string) {
+    return 'noData';
+  },
+});
+const vehicleTitleList = [
+  {
+    label: 'mainPage.pileType',
+    key: 'energyType',
+    unit: '',
+    show: true,
+    width: 12,
+    filter: (val: any) => {
+      return formatVehicleEnergyType(val);
+    },
+  },
+  // TODO 其他标题项...
+];
+const faultTitleList = [
+  {
+    label: 'mainPage.pileType',
+    key: 'energyType',
+    unit: '',
+    show: true,
+    filter: (val: any) => {
+      return formatVehicleEnergyType(val);
+    },
+  },
+  // TODO 其他标题项...
+];
+const tabTitleList = [];
+const vehicleInfoList = [];
+const dataList = [];
+// TODO 其他数据...
 
-  export default {
-    name: 'vehicleMonitorOperatePane', // 车辆监控页面车辆操作pane
-    components: {
-      queryLoading,
-      progressBar,
-      detailsPane,
-      dashBoard,
-      columnPanel,
-      echarts,
-    },
-    directives: { Clickoutside },
-    props: {
-      // 点击地图上的车辆
-      nowVehicleId: {
-        type: String,
-        default: '',
-      },
-      // 是否操作全屏
-      ifDoFullScreen: {
-        type: Boolean,
-        default: false,
-      },
-    },
-    data() {
-      return {
-        statusCode: 'noData',
-        queryStatus: {
-          style: {},
-          setQueryStatus: function (status) {
-            return status;
-          },
-        },
-        queryStatusTwo: {
-          style: {},
-          setQueryStatus: function (status) {
-            return 'noData';
-          },
-        },
-        // 车辆列表标题栏
-        vehicleTitleList: [
-          {
-            /** 类型 */
-            label: 'mainPage.pileType',
-            key: 'energyType',
-            unit: '',
-            show: true,
-            width: 12,
-            filter: (val) => {
-              return formatVehicleEnergyType(val);
-            },
-          },
-          {
-            /** 车辆 */
-            label: 'mainPage.Vehicle',
-            key: 'vehicleName',
-            unit: '',
-            ifShowSort: true,
-            ascDesc: 'default',
-            width: 28,
-            show: true,
-            filter: (val) => {
-              return formatVehicleName(val);
-            },
-          },
-          {
-            /** 车速 */
-            label: 'mainPage.vehicleSpeed',
-            key: 'vehicleSpeed',
-            unit: 'km/h',
-            width: 20,
-            show: true,
-          },
-          {
-            /** 能源 */
-            label: 'mainPage.energySurplus',
-            key: 'energyLeft',
-            unit: '%',
-            ifShowSort: true,
-            width: 20,
-            ascDesc: 'default',
-            show: true,
-          },
-          {
-            /** 行驶里程 */
-            label: 'mainPage.operatingKilometers',
-            key: 'totalMileageDayCount',
-            unit: 'km',
-            width: 20,
-            show: true,
-          },
-          {
-            /** 行驶时间 */
-            label: 'mainPage.filDuration',
-            key: 'dailySecond',
-            unit: '',
-            width: 20,
-            show: true,
-          },
-          {
-            /** 续驶里程 */
-            label: 'mainPage.continueMileage',
-            key: 'drivingRange',
-            unit: 'km',
-            infoContent: '',
-            width: 20,
-            show: true,
-          },
-          {
-            /** 累计里程 */
-            label: 'mainPage.distanceMileage',
-            key: 'totalMiles',
-            unit: 'km',
-            width: 20,
-            show: true,
-          },
-          {
-            /** 车型 */
-            label: 'mainPage.vehicleModel',
-            key: 'vehicleModelName',
-            unit: '',
-            width: 20,
-            show: false,
-          },
-        ],
-        // 故障列表标题栏
-        faultTitleList: [
-          {
-            label: 'mainPage.pileType',
-            key: 'energyType',
-            unit: '',
-            show: true,
-            filter: (val) => {
-              return formatVehicleEnergyType(val);
-            },
-          },
-          {
-            label: 'mainPage.Vehicle',
-            key: 'vehicleName',
-            unit: '',
-            show: true,
-            filter: (val) => {
-              return formatVehicleName(val);
-            },
-          },
-          {
-            icon: 'iconred',
-            key: 'faultLevel1',
-            unit: '',
-            color: '#FF0000',
-            show: true,
-          },
-          {
-            icon: 'iconorange',
-            key: 'faultLevel2',
-            unit: '',
-            color: '#FF6712',
-            show: true,
-          },
-          {
-            icon: 'iconyellow',
-            key: 'faultLevel3',
-            unit: '',
-            color: '#FFD100',
-            show: true,
-          },
-        ],
-        // 标题栏
-        tabTitleList: [],
-        // 车辆信息
-        vehicleInfoList: [], // 车辆基本信息列表
-        dataList: [],
-        ifExpandList: false, // 是否展开列表
-        clickedMenuId: '', // 当前点击的列表菜单id
-        clickedVehicleId: '', // 当前点击的车辆vehicleId
-        dashBoardVehicleId: '', // 当前点击打开仪表盘的车辆vehicleId
-        nowVehicleObj: {}, // 当前点击的车辆对象
-        lastVehicleObj: {}, // 上次点击的车辆对象
-        stateList: [
-          {
-            id: 'all',
-            name: 'mainPage.fullFleet',
-            icon: 'iconvehicle_all',
-            icon_checked: 'iconvehicle_all_checked',
-            color: '#026AE3', // 蓝色
-            num: 0,
-            ratio: '100%',
-          },
-          {
-            id: 'driving',
-            name: 'mainPage.vehicleState_driving',
-            src: require('@/assets/page_imgs/vehicle_runing.png'),
-            src_checked: require('@/assets/page_imgs/vehicle_runing_checked.png'),
-            color: '#026AE3', // 蓝色
-            num: 0,
-            ratio: '',
-            faultNum: 0,
-          },
-          {
-            id: 'stopDriving',
-            name: 'mainPage.vehicleState_stop',
-            icon: 'iconvehicle_icon',
-            icon_checked: 'iconvehicle_icon_checked',
-            color: '#ff9b00', // 橙色
-            num: 0,
-            ratio: '',
-            faultNum: 0,
-          },
-          {
-            id: 'charging',
-            name: 'mainPage.vehicleState_charging',
-            icon: 'iconflash',
-            icon_checked: 'iconvehicle_charging_checked',
-            color: '#8cc63f', // 绿色
-            num: 0,
-            ratio: '',
-            faultNum: 0,
-          },
-          {
-            id: 'offline',
-            name: 'mainPage.offline',
-            icon: 'iconvehicle_icon',
-            icon_checked: 'iconvehicle_icon_checked',
-            color: '#828CA3', // 灰色
-            num: 0,
-            ratio: '',
-            faultNum: 0,
-          },
-          {
-            id: 'fault',
-            name: 'mainPage.chargingPileStateFault',
-            icon: 'iconvehicle_icon',
-            icon_checked: 'iconvehicle_icon_checked',
-            color: '#ff0000', // 红色
-            num: 0,
-            ratio: '',
-            faultNum: 0,
-          },
-        ], // 当前车辆状态列表
-        nowState: 'all', // 当前点击的车辆状态按钮
-        faultList: [], // 当前车辆故障列表
-        topVehiclesList: [], // 当前置顶车辆数组
-        showDialog: false, // 表盘弹窗是否显示
-        sortWords: '', // 排序字段
-        isLeave: false, // 浏览器页签是否切换
-        vehicleListHeight: 0, // 右侧列表初始化高度
-        ifShowDetails: false, // 是否显示当前车辆详情
-        ifShowDiyList: false, // 是否显示自定义列弹窗
-        nowWidth: 20, // 车辆操作栏初始化宽度---百分比（%）
-        nowLength: 8, // 车辆操作栏初始化长度（列数目）
-        sortable: null,
-        stateDescList: [
-          {
-            id: 'driving_desc',
-            name: 'mainPage.vehicleState_driving',
-            desc: 'mainPage.driving_desc',
-            icon: 'iconvehicle_icon icon-driving',
-            color: '#026AE3',
-          },
-          {
-            id: 'stopDriving_desc',
-            name: 'mainPage.vehicleState_stop',
-            desc: 'mainPage.stop_desc',
-            icon: 'iconvehicle_icon icon-stop',
-            color: '#ff9b00',
-          },
-          {
-            id: 'charging_desc',
-            name: 'mainPage.vehicleState_charging',
-            desc: 'mainPage.charging_desc',
-            icon: 'iconflash icon-charging',
-            color: '#8cc63f',
-          },
-          {
-            id: 'offline_desc',
-            name: 'mainPage.offline',
-            desc: 'mainPage.offline_desc',
-            icon: 'iconvehicle_icon icon-offline',
-            color: '#828CA3',
-          },
-        ], // 车辆状态说明描述
-        effectType: 'dark',
-        isShowPieChartBox: false,
-        initOptions: { renderer: 'canvas' },
-        options: {},
-        titList: [
-          {
-            id: 'Status',
-            name: 'mainPage.state',
-          },
-          {
-            id: 'Proportion',
-            name: 'mainPage.mix',
-          },
-          {
-            id: 'Num',
-            name: 'mainPage.num',
-          },
-          {
-            id: 'Fault',
-            name: 'mainPage.fault',
-          },
-        ],
-      };
-    },
-    filters: {
-      filterFormat(val, objTitle, item) {
-        let newVal = '';
-        const filter = objTitle.filter;
-        if (filter && typeof filter === 'function') {
-          newVal = filter(val, item);
-        } else {
-          newVal = val === undefined || val === null ? '-' : val;
-        }
-        return newVal;
-      },
-      formatType(val) {
-        return formatVehicleEnergyType(val);
-      },
-      formatHoverContent(val) {
-        return formatEnergyTypeHover(val);
-      },
-    },
-    computed: {
-      columnsMenu() {
-        const columns = [];
-        this.vehicleTitleList.forEach((item) => {
-          if (item.showInList === false || item.actions) {
-            return;
-          }
-          columns.push({
-            name: item.key,
-            text:
-              item.isFormatLabel === false ? item.label : this.$t(item.label),
-            disabled: item.disabled || false,
-            show: item.show,
-          });
-        });
-        return columns;
-      },
-    },
-    watch: {
-      statusCode(nv, ov) {
-        this.queryStatus.setQueryStatus(nv);
-      },
-      nowVehicleId(nv, ov) {
-        this.clickedVehicleId = nv;
-        if (nv !== '') {
-          this.getClickedVehicleInfo();
-        }
-      },
-      ifDoFullScreen(nv, ov) {
-        this.vehicleListHeight = $('.operatePane_content_box_out').height();
-        this.$nextTick(() => {
-          this.resetHeight(true);
-        });
-      },
-    },
-    created() {
-      // 列表项缓存
-      const asseptCookie = getUserGridCookie(
-        'vehicleMonitorOperatePane',
-        false,
-        this.vehicleTitleList,
-        this
-      );
-      if (asseptCookie) {
-        const vehicleModelItem = this.vehicleTitleList.find(
-          (item) => item.key === 'vehicleModelName'
-        );
-        vehicleModelItem.show = true;
-        this.vehicleTitleList = getUserGridCookie(
-          'vehicleMonitorOperatePane',
-          true,
-          this.vehicleTitleList,
-          this
-        );
-      }
+// 你的计算属性
+const isShowPieChartBox = ref(false); // 是否显示饼图弹窗
+// 其他计算属性...
 
-      this.addProperty(this.vehicleTitleList);
-      this.addProperty(this.faultTitleList);
-      this.tabTitleList = this.vehicleTitleList;
-    },
-    mounted() {
-      this.effectType = window.effectType;
-      this.vehicleListHeight = $('.operatePane_content_box_out').height();
-      this.columnDrop();
-      window.onresize = () => {
-        this.handleResizeNew();
-      };
-    },
-    methods: {
-      /** 添加infoContent属性 */
-      addProperty(data) {
-        data.forEach((item) => {
-          if (item.key === 'vehicleName') {
-            item.infoContent = this.stateDescList;
-          } else if (item.key === 'drivingRange') {
-            item.infoContent = [{ name: 'mainPage.nounExplainOne' }];
-          }
-        });
-      },
-      /** 格式化车辆状态 */
-      formatVehicleState,
-      /** 显示车辆状态分布 */
-      showPieChartBox() {
-        this.isShowPieChartBox = true;
-        this.$log && this.$log({ actionId: 'log.realMonitorPanel', vm: this });
-      },
-      /** 渲染图表 */
-      setEcharts() {
-        const data = this.stateList;
-        this.options = {
-          legend: {
-            right: 50,
-            top: 80,
-            orient: 'vertical',
-            itemWidth: 8,
-            itemHeight: 8,
-            icon: 'circle',
-          },
-          tooltip: {
-            trigger: 'item',
-            show: true,
-          },
-          series: [
-            {
-              type: 'pie',
-              width: '60%',
-              height: '90%',
-              radius: ['70%', '90%'],
-              clockwise: false,
-              avoidLabelOverlap: false,
-              label: { show: false },
-              emphasis: { label: { show: false } },
-              data: [
-                {
-                  value: data[1].num,
-                  name: this.$t(data[1].name),
-                  itemStyle: { color: data[1].color },
-                },
-                {
-                  value: data[2].num,
-                  name: this.$t(data[2].name),
-                  itemStyle: { color: data[2].color },
-                },
-                {
-                  value: data[3].num,
-                  name: this.$t(data[3].name),
-                  itemStyle: { color: data[3].color },
-                },
-                {
-                  value: data[4].num,
-                  name: this.$t(data[4].name),
-                  itemStyle: { color: data[4].color },
-                },
-              ],
-            },
-          ],
-        };
-      },
-      /** 下载右侧车辆列表 */
-      downloadList() {
-        this.$log && this.$log({ actionId: 'log.export', vm: this });
-        const fieldsStr = this.tabTitleList
-          .filter((item) => item.key === 'vehicleState' || item.show)
-          .map((field) => field.key)
-          .join(',');
-        const idStr = this.dataList.map((item) => item.vehicleId).join(',');
+// 响应式的 Props
+const props = defineProps({
+  nowVehicleId: {
+    type: String,
+    default: '',
+  },
+  ifDoFullScreen: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-        if (!idStr) {
-          this.$messageNew(
-            'warning_color',
-            this.$t('mainPage.noVehicleExport')
-          );
-          return false;
-        }
-        const params = {
-          fields: fieldsStr,
-          vehicleIds: idStr,
-        };
-        Service.requestApi('exportV2VehicleListByIds', params)
-          .then((res) => {
-            if (res.code === 1) {
-              if (res.data && res.data.fileUrl) {
-                this.$store.dispatch('downloadFile', res.data.fileUrl);
-              } else {
-                this.$MessageNewObj.success(
-                  this.$t('mainPage.creatExportTaskSuccess')
-                );
-              }
-            }
-          })
-          .catch(() => {
-            this.$notify({
-              title: 'error',
-              message: this.$t('mainPage.exportDataError'),
-              type: 'error',
-              center: true,
-              duration: 2000,
-              position: 'bottom-right',
-            });
-          });
-      },
-      /** resize 时触发函数 */
-      handleResizeNew: debounce(function () {
-        this.vehicleListHeight = $('.operatePane_content_box_out').height();
-        this.$nextTick(() => {
-          this.resetHeight(true);
-        });
-      }, 200),
-      // 响应列表宽度变化
-      /** 列表宽度响应变化梳理：1：点击故障按钮，不区分展开还是收缩--宽度固定20%
-       * 2：点击其它按钮，当前列length < 5时，不区分展开还是收缩--宽度等于100/length + %
-       * 3：当前列length >= 5时，展开时--宽度等于100/length + %,收缩时--宽度等于20%
-       * 4：点击自定义显示列，勾选或者取消勾选列的宽度变化遵循上述2、3条
-       */
-      calcWidth(width) {
-        const num = this.ifExpandList ? 100 : 5;
-        const total = this.vehicleTitleList
-          .filter((item) => item.showInList !== false && item.show)
-          .map((item) => item.width)
-          .slice(0, num)
-          .reduce((sum, curr) => sum + curr, 0);
+// 自定义过滤器函数
+const filterFormat = (val, objTitle, item) => {
+  let newVal = '';
+  const filter = objTitle.filter;
+  if (filter && typeof filter === 'function') {
+    newVal = filter(val, item);
+  } else {
+    newVal = val === undefined || val === null ? '-' : val;
+  }
+  return newVal;
+};
 
-        return (width * 100) / total;
-      },
-      changeTabWidth() {
-        if (this.nowState === 'fault') {
-          this.nowWidth = 20;
-        } else {
-          if (this.ifExpandList) {
-            this.nowWidth = 100 / this.nowLength;
-          } else {
-            if (this.nowLength < 5) {
-              this.nowWidth = 100 / this.nowLength;
-            } else {
-              this.nowWidth = 20;
-            }
-          }
-        }
-      },
-      // 自定义显示列设置
-      handleSettingColumn(val) {
-        this.nowLength = val.length;
-        this.changeTabWidth();
-        const list = [];
-        this.vehicleTitleList.forEach((item, index) => {
-          if (val.indexOf(item.key) === -1) {
-            // 此列被设为隐藏了
-            list.push(index);
-            item.show = false;
-          } else {
-            item.show = true;
-          }
-        });
-        this.tabTitleList = this.vehicleTitleList;
-        setUserGridCookie(list, 'vehicleMonitorOperatePane', this);
-      },
-      // 拖拽函数
-      columnDrop() {
-        this.$nextTick(() => {
-          const wrapperTr = document.querySelector(
-            '.monitor_operatePane_tit_box'
-          );
-          if (wrapperTr) {
-            this.sortable = Sortable.create(wrapperTr, {
-              animation: 150,
-              handle: '.monitor_operatePane_tit_list',
-              chosenClass: 'operate-ghost',
-              // 拖拽开始
-              onStart: (evt) => {},
-              // 拖拽结束
-              // 列表单元拖放结束后的回调函数
-              onEnd: (evt) => {
-                const oldIndex = evt.oldIndex - 0;
-                const newIndex = evt.newIndex - 0;
-                const oldItem = this.tabTitleList[oldIndex];
-                const newItem = this.tabTitleList[newIndex];
-                let oldColumnIndex;
-                let newColumnIndex;
-                this.tabTitleList.forEach((item, index) => {
-                  if (item.key === oldItem.key) {
-                    oldColumnIndex = index;
-                  }
-                  if (item.key === newItem.key) {
-                    newColumnIndex = index;
-                  }
-                });
-                const currList = this.tabTitleList.splice(oldColumnIndex, 1)[0];
-                this.tabTitleList.splice(newColumnIndex, 0, currList);
-              },
-              // 当拖动列表单元时会生成一个副本作为影子单元来模拟被拖动单元排序的情况，此配置项就是来给这个影子单元添加一个class，我们可以通过这种方式来给影子元素进行编辑样式
-              // dragClass: "hide-ghost",
-              forceFallback: true,
-            });
-          }
-        });
-      },
-      // 排序
-      sortListData(obj, sort) {
-        if (!obj.ifShowSort) {
-          return false;
-        }
-        this.tabTitleList.forEach((item) => {
-          if (item.ascDesc) {
-            if (item.key === obj.key) {
-              item.ascDesc = sort;
-            } else {
-              item.ascDesc = 'default';
-            }
-          }
-        });
+// 计算属性或普通函数来实现过滤功能
+const formatType = (val) => {
+  return formatVehicleEnergyType(val);
+};
 
-        this.sortWords = sort === 'default' ? '' : obj.key + '|' + sort;
-        this.$emit('sort');
-      },
-      // 展开列表
-      expandList() {
-        this.ifExpandList = !this.ifExpandList;
-        this.$emit('changeWidth', this.ifExpandList);
-        this.changeTabWidth();
-      },
-      // 点击打开仪表盘弹窗
-      gotoCluster(vehicleId) {
-        this.$log && this.$log({ actionId: 'log.dashboard', vm: this });
-        this.showDialog = true;
-        this.clickedMenuId = '';
-        this.dashBoardVehicleId = vehicleId;
-      },
-      // 点击前往车辆档案页面
-      gotoDetails(vehicleId) {
-        this.$log && this.$log({ actionId: 'log.hwVehicleDetail', vm: this });
-        this.clickedMenuId = '';
-        this.$router.push({
-          path: 'hwVehicleDetail',
-          query: {
-            vehicleId: vehicleId,
-          },
-        });
-      },
-      // 点击置顶当前车辆信息
-      upTop(vehicle) {
-        this.$log && this.$log({ actionId: 'log.stickyTop', vm: this });
-        if (vehicle.vehicleId === this.clickedVehicleId) {
-          this.closeDetails();
-        }
-        this.clickedMenuId = '';
-        const length = this.topVehiclesList.length;
-        if (length === 0) {
-          this.topVehiclesList.push(vehicle);
-          this.$nextTick(() => {
-            this.resetHeight(true);
-          });
-        } else if (length === 1) {
-          if (this.topVehiclesList[0].vehicleId !== vehicle.vehicleId) {
-            this.topVehiclesList.unshift(vehicle);
-            this.$nextTick(() => {
-              this.resetHeight(true);
-            });
-          }
-        } else if (length === 2) {
-          const index = this._.findIndex(this.topVehiclesList, (item) => {
-            return item.vehicleId === vehicle.vehicleId;
-          });
-          if (index === -1) {
-            this.topVehiclesList.pop();
-            this.topVehiclesList.unshift(vehicle);
-          }
-        }
-      },
-      // 取消置顶
-      cancelTop(vehicleId) {
-        this.topVehiclesList = this._.filter(
-          this.topVehiclesList,
-          (vehicle) => {
-            return vehicle.vehicleId !== vehicleId;
-          }
-        );
-        this.$nextTick(() => {
-          this.resetHeight(false);
-        });
-      },
-      // 更新置顶车辆信息
-      updateUpTopVehicleInfo() {
-        const list = [];
-        if (this.topVehiclesList.length > 0) {
-          this.topVehiclesList.forEach((item) => {
-            this.vehicleInfoList.forEach((vehicle) => {
-              if (vehicle.vehicleId === item.vehicleId) {
-                list.push(vehicle);
-              }
-            });
-          });
-          this.topVehiclesList = list;
-        }
-      },
-      // 关闭详情显示
-      closeDetails() {
-        this.clickedVehicleId = '';
-        this.ifShowDetails = false;
-        this.$nextTick(() => {
-          this.resetHeight(false);
-        });
-      },
-      // 点击显示当前列菜单操作栏
-      showNowMenuList(vehicleId) {
-        this.clickedMenuId = vehicleId === this.clickedMenuId ? '' : vehicleId;
-      },
-      // 点击关闭当前列菜单操作栏
-      closeNowMenuList() {
-        this.clickedMenuId = '';
-      },
-      // 选择/取消选择当前列
-      seledNowList(obj) {
-        if (this.clickedVehicleId === '') {
-          this.$nextTick(() => {
-            this.resetHeight(true);
-          });
-        }
-        this.$emit('changeVehicle', obj);
-        this.clickedVehicleId = obj.vehicleId;
-        this.getClickedVehicleInfo();
-      },
-      // 获取点击车辆详情
-      getClickedVehicleInfo() {
-        if (this.clickedVehicleId !== '') {
-          const topNowVehicle = this._.find(this.topVehiclesList, (item) => {
-            return item.vehicleId === this.clickedVehicleId;
-          });
-          this.ifShowDetails = !topNowVehicle;
+const formatHoverContent = (val) => {
+  return formatEnergyTypeHover(val);
+};
 
-          this.$nextTick(() => {
-            this.resetHeight(true);
-          });
+// 计算属性来计算 columnsMenu
+const columnsMenu = computed(() => {
+  const columns = [];
+  vehicleTitleList.value.forEach((item) => {
+    if (item.showInList === false || item.actions) {
+      return;
+    }
+    columns.push({
+      name: item.key,
+      text: item.isFormatLabel === false ? item.label : t(item.label),
+      disabled: item.disabled || false,
+      show: item.show,
+    });
+  });
+  return columns;
+});
 
-          const nowVehicle = this.vehicleInfoList.find(
-            (item) => item.vehicleId === this.clickedVehicleId
-          );
-          if (nowVehicle) {
-            this.lastVehicleObj = Object.assign({}, this.nowVehicleObj);
-            this.nowVehicleObj = nowVehicle;
-            // TODO 此处说明找到了 地图选中的车辆  赋值平均速度 字段
-            // if (this.lastVehicleObj.vehicleId === this.nowVehicleObj.vehicleId) {
-            //   let vehicleAvgSpeed = Math.round(((this.lastVehicleObj.vehicleSpeed * 1 + this.nowVehicleObj.vehicleSpeed * 1) / 2) * 10) / 10
-            //   vehicleAvgSpeed = vehicleAvgSpeed.toFixed(1)
-            //   this.$set(this.nowVehicleObj, 'vehicleAvgSpeed', vehicleAvgSpeed)
-            //   console.log('当前速度平均:', vehicleAvgSpeed)
-            // } else {
-            //   this.$set(this.nowVehicleObj, 'vehicleAvgSpeed', this.nowVehicleObj.vehicleSpeed)
-            // }
-            this.faultList =
-              nowVehicle.vehicleFaultDetail &&
-              nowVehicle.vehicleFaultDetail.length > 0
-                ? nowVehicle.vehicleFaultDetail
-                : [];
-          } else {
-            this.ifShowDetails = false;
-          }
-        }
-      },
-      // 获取各种状态车辆数量
-      getVehicleStateNum() {
-        const allNum = this.vehicleInfoList.length;
-        let runningNum = 0;
-        let runFaultNum = 0;
-        let stopRuningNum = 0;
-        let stopFaultNum = 0;
-        let chargingNum = 0;
-        let chargeFaultNum = 0;
-        let offlineNum = 0;
-        let offlineFaultNum = 0;
-        let faultNum = 0;
-        this.vehicleInfoList.forEach((item) => {
-          item.alarmStatus2 - 0 === 1 && faultNum++;
-          switch (item.vehicleState) {
-            case 4:
-              offlineNum++;
-              item.alarmStatus2 - 0 === 1 && offlineFaultNum++;
-              break;
-            case 3:
-              chargingNum++;
-              item.alarmStatus2 - 0 === 1 && chargeFaultNum++;
-              break;
-            case 2:
-              stopRuningNum++;
-              item.alarmStatus2 - 0 === 1 && stopFaultNum++;
-              break;
-            case 1:
-              runningNum++;
-              item.alarmStatus2 - 0 === 1 && runFaultNum++;
-              break;
-          }
-        });
-        const stateNumArr = [
-          allNum,
-          runningNum,
-          stopRuningNum,
-          chargingNum,
-          offlineNum,
-          faultNum,
-        ];
-        const stateFaultNumArr = [
-          faultNum,
-          runFaultNum,
-          stopFaultNum,
-          chargeFaultNum,
-          offlineFaultNum,
-          faultNum,
-        ];
-        this.stateList.forEach((state, index) => {
-          state.num = stateNumArr[index];
-          state.faultNum = stateFaultNumArr[index];
-          const radio = stateNumArr[index]
-            ? (stateNumArr[index] / allNum) * 100
-            : 0;
-          const isDecimalPoint = String(radio).indexOf('.') > -1;
-          state.ratio = (!isDecimalPoint ? radio : radio.toFixed(2)) + '%';
-        });
-        this.setEcharts();
-      },
-      // 获取车辆基本信息
-      getVehicleInfoData(obj) {
-        if (obj.ifResetHeight) {
-          if (this.clickedVehicleId !== '') {
-            $('.operatePane_content_box_out').height(this.vehicleListHeight);
-          }
-          this.clickedVehicleId = '';
-          this.ifShowDetails = false;
-        }
-        this.statusCode = 'loading';
-        if (!obj.listIds) {
-          setTimeout(() => {
-            this.vehicleInfoList = [];
-            this.dataList = [];
-            this.getVehicleStateNum();
-            this.statusCode = 'noData';
-          }, 1000);
-          return false;
-        }
-        const params = {
-          vehicleIds: obj.listIds,
-          orderBy: this.sortWords,
-        };
-        Service.requestApi('getV2VehicleListByIds', params)
-          .then((res) => {
-            if (res.code === 1 && res.data && res.data.length > 0) {
-              const data = res.data;
-              data.forEach((item) => {
-                if (item.vehicleSpeed) {
-                  item.vehicleSpeed = item.vehicleSpeed;
-                } else {
-                  item.vehicleSpeed = 0;
-                }
-                if (item.vehicleState === 4) {
-                  item.vehicleSpeed = '-';
-                } else if (item.vehicleState === 2) {
-                  item.vehicleSpeed = '0.0';
-                }
-                item.vehicleName = item.vehicleName ? item.vehicleName : '-';
-                item.energyLeft = item.energyLeft ? item.energyLeft : '-';
-              });
-              this.vehicleInfoList = data;
-              this.statusCode = 'loaded';
-              this.getVehicleStateNum();
-              this.changeState(this.nowState);
-              this.getClickedVehicleInfo();
-              this.updateUpTopVehicleInfo();
-              this.$nextTick(() => {
-                this.resetHeight(true);
-              });
-            } else {
-              this.vehicleInfoList = [];
-              this.dataList = [];
-              this.statusCode = 'noData';
-            }
-          })
-          .catch(() => {
-            this.vehicleInfoList = [];
-            this.dataList = [];
-            this.statusCode = 'noData';
-          });
-      },
-      // 点击状态按钮切换下方显示的车辆列表
-      changeState(val) {
-        this.nowState = val;
-        const newList = this.vehicleInfoList;
-        let list = [];
-        this.changeTabWidth();
-        if (val === 'fault') {
-          list = this._.filter(newList, (vehicle) => {
-            return vehicle.alarmStatus2 - 0 === 1;
-          });
-          this.tabTitleList = this.faultTitleList;
-        } else {
-          switch (val) {
-            case 'all':
-              list = newList;
-              break;
-            case 'driving':
-              list = this._.filter(newList, (vehicle) => {
-                return vehicle.vehicleState === 1;
-              });
-              break;
-            case 'stopDriving':
-              list = this._.filter(newList, (vehicle) => {
-                return vehicle.vehicleState === 2;
-              });
-              break;
-            case 'charging':
-              list = this._.filter(newList, (vehicle) => {
-                return vehicle.vehicleState === 3;
-              });
-              break;
-            case 'offline':
-              list = this._.filter(newList, (vehicle) => {
-                return vehicle.vehicleState === 4;
-              });
-              break;
-          }
-          this.tabTitleList = this.vehicleTitleList;
-        }
-        if (list.length === 0) {
-          this.statusCode = 'noData';
-        } else {
-          this.statusCode = 'loaded';
-        }
-        this.dataList = list;
-      },
-      // 置顶或者点击详情以后重新计算下方车辆列表高度
-      resetHeight(ifShow) {
-        // ifShow: 是显示详情、置顶还是隐藏详情、取消置顶
-        const listHeight =
-          $(
-            '.vehicle_monitoring_box .monitoring_map_out_box .vehile_list_box'
-          ).height() - 76;
-        let length = this.topVehiclesList.length;
-        if (this.ifShowDetails) {
-          length++;
-        }
-        let heightInfo = 0;
-        if (ifShow) {
-          heightInfo = 143;
-        } else {
-          heightInfo = -143;
-        }
-        const sumHeight = heightInfo * length;
-        const realHeight = listHeight - sumHeight;
-        $('.operatePane_content_box_out').height(realHeight);
-      },
-      formatIcon(row, config) {
-        const { vehicleState } = row || {};
-        const { infoContent } = config || {};
-        const iconObj = infoContent && infoContent[vehicleState - 1];
-        return (iconObj && iconObj.icon) || '';
-      },
-    },
-    beforeDestroy() {
-      this.sortable.destroy();
-      window.removeEventListener('resize', () => {
-        this.handleResizeNew();
-      });
-    },
+// 监听 statusCode 的变化
+watch('statusCode', (nv, ov) => {
+  queryStatus.setQueryStatus(nv);
+});
+
+// 监听 nowVehicleId 的变化
+watch('nowVehicleId', (nv, ov) => {
+  clickedVehicleId.value = nv;
+  if (nv !== '') {
+    getClickedVehicleInfo();
+  }
+});
+
+// 监听 ifDoFullScreen 的变化
+watch('ifDoFullScreen', (nv, ov) => {
+  vehicleListHeight.value = $('.operatePane_content_box_out').height();
+  nextTick(() => {
+    resetHeight(true);
+  });
+});
+
+// 在组件即将被挂载前执行的操作
+onBeforeMount(() => {
+  // 列表项缓存
+  const asseptCookie = getUserGridCookie(
+    'vehicleMonitorOperatePane',
+    false,
+    vehicleTitleList,
+    this
+  );
+  if (asseptCookie) {
+    const vehicleModelItem = vehicleTitleList.find(
+      (item) => item.key === 'vehicleModelName'
+    );
+    vehicleModelItem.show = true;
+    vehicleTitleList = getUserGridCookie(
+      'vehicleMonitorOperatePane',
+      true,
+      vehicleTitleList,
+      this
+    );
+  }
+
+  addProperty(vehicleTitleList);
+  addProperty(faultTitleList);
+  tabTitleList.value = vehicleTitleList;
+});
+
+// 在组件被挂载后执行的操作
+onMounted(() => {
+  effectType.value = window.effectType;
+  vehicleListHeight.value = $('.operatePane_content_box_out').height();
+  columnDrop();
+  window.onresize = () => {
+    handleResizeNew();
   };
-</script>
+});
 
-<style lang="scss">
+// 添加infoContent属性
+const addProperty = (data) => {
+  data.forEach((item) => {
+    if (item.key === 'vehicleName') {
+      item.infoContent = stateDescList;
+    } else if (item.key === 'drivingRange') {
+      item.infoContent = [{ name: 'mainPage.nounExplainOne' }];
+    }
+  });
+};
+
+// 格式化车辆状态
+const formatVehicleStateFunc = formatVehicleState;
+
+// 显示车辆状态分布
+const isShowPieChartBox = ref(false);
+const showPieChartBox = () => {
+  isShowPieChartBox.value = true;
+  $log && $log({ actionId: 'log.realMonitorPanel', vm: this });
+};
+
+// 渲染图表
+const options = ref({});
+const setEcharts = () => {
+  const data = stateList;
+
+  options.value = {
+    legend: {
+      right: 50,
+      top: 80,
+      orient: 'vertical',
+      itemWidth: 8,
+      itemHeight: 8,
+      icon: 'circle',
+    },
+    tooltip: {
+      trigger: 'item',
+      show: true,
+    },
+    series: [
+      {
+        type: 'pie',
+        width: '60%',
+        height: '90%',
+        radius: ['70%', '90%'],
+        clockwise: false,
+        avoidLabelOverlap: false,
+        label: { show: false },
+        emphasis: { label: { show: false } },
+        data: [
+          {
+            value: data[1].num,
+            name: $t(data[1].name),
+            itemStyle: { color: data[1].color },
+          },
+          {
+            value: data[2].num,
+            name: $t(data[2].name),
+            itemStyle: { color: data[2].color },
+          },
+          {
+            value: data[3].num,
+            name: $t(data[3].name),
+            itemStyle: { color: data[3].color },
+          },
+          {
+            value: data[4].num,
+            name: $t(data[4].name),
+            itemStyle: { color: data[4].color },
+          },
+        ],
+      },
+    ],
+  };
+};
+
+// 下载右侧车辆列表
+const downloadList = () => {
+  $log && $log({ actionId: 'log.export', vm: this });
+
+  const fieldsStr = tabTitleList
+    .filter((item) => item.key === 'vehicleState' || item.show)
+    .map((field) => field.key)
+    .join(',');
+
+  const idStr = dataList.map((item) => item.vehicleId).join(',');
+
+  if (!idStr) {
+    $messageNew('warning_color', $t('mainPage.noVehicleExport'));
+    return false;
+  }
+
+  const params = {
+    fields: fieldsStr,
+    vehicleIds: idStr,
+  };
+
+  Service.requestApi('exportV2VehicleListByIds', params)
+    .then((res) => {
+      if (res.code === 1) {
+        if (res.data && res.data.fileUrl) {
+          $store.dispatch('downloadFile', res.data.fileUrl);
+        } else {
+          $MessageNewObj.success($t('mainPage.creatExportTaskSuccess'));
+        }
+      }
+    })
+    .catch(() => {
+      $notify({
+        title: 'error',
+        message: $t('mainPage.exportDataError'),
+        type: 'error',
+        center: true,
+        duration: 2000,
+        position: 'bottom-right',
+      });
+    });
+};
+
+// 响应式数据
+const vehicleListHeight = ref(0);
+const ifExpandList = ref(false);
+const nowState = ref('all');
+const nowWidth = ref(20);
+const nowLength = ref(8);
+const vehicleTitleList = ref([
+  // ... your vehicleTitleList data
+]);
+
+// resize 时触发函数
+const handleResizeNew = debounce(() => {
+  vehicleListHeight.value = $('.operatePane_content_box_out').height();
+  nextTick(() => {
+    resetHeight(true);
+  });
+}, 200);
+
+// 计算宽度
+const calcWidth = (width) => {
+  const num = ifExpandList.value ? 100 : 5;
+  const total = vehicleTitleList.value
+    .filter((item) => item.showInList !== false && item.show)
+    .map((item) => item.width)
+    .slice(0, num)
+    .reduce((sum, curr) => sum + curr, 0);
+
+  return (width * 100) / total;
+};
+
+// 改变 Tab 宽度
+const changeTabWidth = () => {
+  if (nowState.value === 'fault') {
+    nowWidth.value = 20;
+  } else {
+    if (ifExpandList.value) {
+      nowWidth.value = 100 / nowLength.value;
+    } else {
+      if (nowLength.value < 5) {
+        nowWidth.value = 100 / nowLength.value;
+      } else {
+        nowWidth.value = 20;
+      }
+    }
+  }
+};
+
+// 响应式数据
+const nowLength = ref(8);
+const vehicleTitleList = ref([
+  // ... your vehicleTitleList data
+]);
+
+// 自定义显示列设置
+const handleSettingColumn = (val) => {
+  nowLength.value = val.length;
+  changeTabWidth();
+  const list = [];
+  vehicleTitleList.value.forEach((item, index) => {
+    if (val.indexOf(item.key) === -1) {
+      // 此列被设为隐藏了
+      list.push(index);
+      item.show = false;
+    } else {
+      item.show = true;
+    }
+  });
+  tabTitleList.value = vehicleTitleList.value;
+  setUserGridCookie(list, 'vehicleMonitorOperatePane', this);
+};
+
+// 拖拽函数
+const columnDrop = () => {
+  nextTick(() => {
+    const wrapperTr = document.querySelector('.monitor_operatePane_tit_box');
+    if (wrapperTr) {
+      const sortable = new Sortable(wrapperTr, {
+        animation: 150,
+        handle: '.monitor_operatePane_tit_list',
+        chosenClass: 'operate-ghost',
+        // 拖拽开始
+        onStart: (evt) => {},
+        // 拖拽结束
+        // 列表单元拖放结束后的回调函数
+        onEnd: (evt) => {
+          const oldIndex = evt.oldIndex - 0;
+          const newIndex = evt.newIndex - 0;
+          const oldItem = tabTitleList.value[oldIndex];
+          const newItem = tabTitleList.value[newIndex];
+          let oldColumnIndex;
+          let newColumnIndex;
+          tabTitleList.value.forEach((item, index) => {
+            if (item.key === oldItem.key) {
+              oldColumnIndex = index;
+            }
+            if (item.key === newItem.key) {
+              newColumnIndex = index;
+            }
+          });
+          const currList = tabTitleList.value.splice(oldColumnIndex, 1)[0];
+          tabTitleList.value.splice(newColumnIndex, 0, currList);
+        },
+        // 当拖动列表单元时会生成一个副本作为影子单元来模拟被拖动单元排序的情况，
+        // 此配置项就是来给这个影子单元添加一个class，
+        // 我们可以通过这种方式来给影子元素进行编辑样式
+        // dragClass: "hide-ghost",
+        forceFallback: true,
+      });
+    }
+  });
+};
+
+// 响应式数据
+const ifExpandList = ref(false);
+const clickedMenuId = ref('');
+const showDialog = ref(false);
+const dashBoardVehicleId = ref('');
+const clickedVehicleId = ref('');
+const topVehiclesList = ref([]);
+
+// 排序
+const sortListData = (obj, sort) => {
+  if (!obj.ifShowSort) {
+    return false;
+  }
+  tabTitleList.value.forEach((item) => {
+    if (item.ascDesc) {
+      if (item.key === obj.key) {
+        item.ascDesc = sort;
+      } else {
+        item.ascDesc = 'default';
+      }
+    }
+  });
+
+  sortWords.value = sort === 'default' ? '' : obj.key + '|' + sort;
+  emit('sort');
+};
+
+// 展开列表
+const expandList = () => {
+  ifExpandList.value = !ifExpandList.value;
+  emit('changeWidth', ifExpandList.value);
+  changeTabWidth();
+};
+
+// 点击打开仪表盘弹窗
+const gotoCluster = (vehicleId) => {
+  $log && $log({ actionId: 'log.dashboard', vm: this });
+  showDialog.value = true;
+  clickedMenuId.value = '';
+  dashBoardVehicleId.value = vehicleId;
+};
+
+// 点击前往车辆档案页面
+const gotoDetails = (vehicleId) => {
+  $log && $log({ actionId: 'log.hwVehicleDetail', vm: this });
+  clickedMenuId.value = '';
+  $router.push({
+    path: 'hwVehicleDetail',
+    query: {
+      vehicleId: vehicleId,
+    },
+  });
+};
+
+// 点击置顶当前车辆信息
+const upTop = (vehicle) => {
+  $log && $log({ actionId: 'log.stickyTop', vm: this });
+  if (vehicle.vehicleId === clickedVehicleId.value) {
+    closeDetails();
+  }
+  clickedMenuId.value = '';
+  const length = topVehiclesList.value.length;
+  if (length === 0) {
+    topVehiclesList.value.push(vehicle);
+    $nextTick(() => {
+      resetHeight(true);
+    });
+  } else if (length === 1) {
+    if (topVehiclesList.value[0].vehicleId !== vehicle.vehicleId) {
+      topVehiclesList.value.unshift(vehicle);
+      $nextTick(() => {
+        resetHeight(true);
+      });
+    }
+  } else if (length === 2) {
+    const index = _.findIndex(topVehiclesList.value, (item) => {
+      return item.vehicleId === vehicle.vehicleId;
+    });
+    if (index === -1) {
+      topVehiclesList.value.pop();
+      topVehiclesList.value.unshift(vehicle);
+    }
+  }
+};
+
+
+// 取消置顶
+const cancelTop = (vehicleId) => {
+  topVehiclesList.value = topVehiclesList.value.filter((vehicle) => {
+    return vehicle.vehicleId !== vehicleId;
+  });
+  nextTick(() => {
+    resetHeight(false);
+  });
+};
+
+// 更新置顶车辆信息
+const updateUpTopVehicleInfo = () => {
+  const list = [];
+  if (topVehiclesList.value.length > 0) {
+    topVehiclesList.value.forEach((item) => {
+      vehicleInfoList.value.forEach((vehicle) => {
+        if (vehicle.vehicleId === item.vehicleId) {
+          list.push(vehicle);
+        }
+      });
+    });
+    topVehiclesList.value = list;
+  }
+};
+
+// 关闭详情显示
+const closeDetails = () => {
+  clickedVehicleId.value = '';
+  ifShowDetails.value = false;
+  nextTick(() => {
+    resetHeight(false);
+  });
+};
+
+// 点击显示当前列菜单操作栏
+const showNowMenuList = (vehicleId) => {
+  clickedMenuId.value = vehicleId === clickedMenuId.value ? '' : vehicleId;
+};
+
+// 点击关闭当前列菜单操作栏
+const closeNowMenuList = () => {
+  clickedMenuId.value = '';
+};
+
+// 选择/取消选择当前列
+const seledNowList = (obj) => {
+  if (clickedVehicleId.value === '') {
+    nextTick(() => {
+      resetHeight(true);
+    });
+  }
+  emit('changeVehicle', obj);
+  clickedVehicleId.value = obj.vehicleId;
+  getClickedVehicleInfo();
+};
+
+// 获取点击车辆详情
+const getClickedVehicleInfo = () => {
+  if (clickedVehicleId.value !== '') {
+    const topNowVehicle = topVehiclesList.value.find((item) => {
+      return item.vehicleId === clickedVehicleId.value;
+    });
+    ifShowDetails.value = !topNowVehicle;
+
+    nextTick(() => {
+      resetHeight(true);
+    });
+
+    const nowVehicle = vehicleInfoList.value.find(
+      (item) => item.vehicleId === clickedVehicleId.value
+    );
+    if (nowVehicle) {
+      lastVehicleObj.value = { ...nowVehicle };
+      nowVehicleObj.value = nowVehicle;
+      faultList.value =
+        nowVehicle.vehicleFaultDetail && nowVehicle.vehicleFaultDetail.length > 0
+          ? nowVehicle.vehicleFaultDetail
+          : [];
+    } else {
+      ifShowDetails.value = false;
+    }
+  }
+};
+
+// 获取各种状态车辆数量
+const getVehicleStateNum = () => {
+  const allNum = vehicleInfoList.value.length;
+  let runningNum = 0;
+  let runFaultNum = 0;
+  let stopRuningNum = 0;
+  let stopFaultNum = 0;
+  let chargingNum = 0;
+  let chargeFaultNum = 0;
+  let offlineNum = 0;
+  let offlineFaultNum = 0;
+  let faultNum = 0;
+  vehicleInfoList.value.forEach((item) => {
+    item.alarmStatus2 - 0 === 1 && faultNum++;
+    switch (item.vehicleState) {
+      case 4:
+        offlineNum++;
+        item.alarmStatus2 - 0 === 1 && offlineFaultNum++;
+        break;
+      case 3:
+        chargingNum++;
+        item.alarmStatus2 - 0 === 1 && chargeFaultNum++;
+        break;
+      case 2:
+        stopRuningNum++;
+        item.alarmStatus2 - 0 === 1 && stopFaultNum++;
+        break;
+      case 1:
+        runningNum++;
+        item.alarmStatus2 - 0 === 1 && runFaultNum++;
+        break;
+    }
+  });
+  const stateNumArr = [
+    allNum,
+    runningNum,
+    stopRuningNum,
+    chargingNum,
+    offlineNum,
+    faultNum,
+  ];
+  const stateFaultNumArr = [
+    faultNum,
+    runFaultNum,
+    stopFaultNum,
+    chargeFaultNum,
+    offlineFaultNum,
+    faultNum,
+  ];
+  stateList.value.forEach((state, index) => {
+    state.num = stateNumArr[index];
+    state.faultNum = stateFaultNumArr[index];
+    const radio = stateNumArr[index] ? (stateNumArr[index] / allNum) * 100 : 0;
+    const isDecimalPoint = String(radio).indexOf('.') > -1;
+    state.ratio = (!isDecimalPoint ? radio : radio.toFixed(2)) + '%';
+  });
+  setEcharts();
+};
+
+<script setup lang="ts">
+import { ref, onMounted, nextTick } from 'vue';
+import Service from './your-service-path'; // 请替换成你的服务路径
+
+// 数据
+const statusCode = ref('noData');
+const vehicleInfoList = ref([]);
+const dataList = ref([]);
+const sortWords = ref('');
+
+// 获取车辆基本信息
+const getVehicleInfoData = (obj) => {
+  if (obj.ifResetHeight) {
+    if (clickedVehicleId.value !== '') {
+      $('.operatePane_content_box_out').height(vehicleListHeight.value);
+    }
+    clickedVehicleId.value = '';
+    ifShowDetails.value = false;
+  }
+  statusCode.value = 'loading';
+  if (!obj.listIds) {
+    setTimeout(() => {
+      vehicleInfoList.value = [];
+      dataList.value = [];
+      getVehicleStateNum();
+      statusCode.value = 'noData';
+    }, 1000);
+    return false;
+  }
+  const params = {
+    vehicleIds: obj.listIds,
+    orderBy: sortWords.value,
+  };
+  Service.requestApi('getV2VehicleListByIds', params)
+    .then((res) => {
+      if (res.code === 1 && res.data && res.data.length > 0) {
+        const data = res.data;
+        data.forEach((item) => {
+          if (item.vehicleSpeed) {
+            item.vehicleSpeed = item.vehicleSpeed;
+          } else {
+            item.vehicleSpeed = 0;
+          }
+          if (item.vehicleState === 4) {
+            item.vehicleSpeed = '-';
+          } else if (item.vehicleState === 2) {
+            item.vehicleSpeed = '0.0';
+          }
+          item.vehicleName = item.vehicleName ? item.vehicleName : '-';
+          item.energyLeft = item.energyLeft ? item.energyLeft : '-';
+        });
+        vehicleInfoList.value = data;
+        statusCode.value = 'loaded';
+        getVehicleStateNum();
+        changeState(nowState);
+        getClickedVehicleInfo();
+        updateUpTopVehicleInfo();
+        nextTick(() => {
+          resetHeight(true);
+        });
+      } else {
+        vehicleInfoList.value = [];
+        dataList.value = [];
+        statusCode.value = 'noData';
+      }
+    })
+    .catch(() => {
+      vehicleInfoList.value = [];
+      dataList.value = [];
+      statusCode.value = 'noData';
+    });
+};
+
+// 数据
+const nowState = ref('all');
+const dataList = ref([]);
+const ifShowDetails = ref(false);
+const clickedVehicleId = ref('');
+const vehicleTitleList = ref([]);
+const faultTitleList = ref([]);
+const topVehiclesList = ref([]);
+
+// 切换下方显示的车辆列表
+const changeState = (val) => {
+  nowState.value = val;
+  const newList = vehicleInfoList.value;
+  let list = [];
+  changeTabWidth();
+  if (val === 'fault') {
+    list = newList.filter((vehicle) => vehicle.alarmStatus2 - 0 === 1);
+    tabTitleList.value = faultTitleList.value;
+  } else {
+    switch (val) {
+      case 'all':
+        list = newList;
+        break;
+      case 'driving':
+        list = newList.filter((vehicle) => vehicle.vehicleState === 1);
+        break;
+      case 'stopDriving':
+        list = newList.filter((vehicle) => vehicle.vehicleState === 2);
+        break;
+      case 'charging':
+        list = newList.filter((vehicle) => vehicle.vehicleState === 3);
+        break;
+      case 'offline':
+        list = newList.filter((vehicle) => vehicle.vehicleState === 4);
+        break;
+    }
+    tabTitleList.value = vehicleTitleList.value;
+  }
+  if (list.length === 0) {
+    statusCode.value = 'noData';
+  } else {
+    statusCode.value = 'loaded';
+  }
+  dataList.value = list;
+};
+
+// 置顶或点击详情重新计算车辆列表高度
+const resetHeight = (ifShow) => {
+  // ifShow: 是显示详情、置顶还是隐藏详情、取消置顶
+  const listHeight =
+    $('.vehicle_monitoring_box .monitoring_map_out_box .vehile_list_box').height() - 76;
+  let length = topVehiclesList.value.length;
+  if (ifShowDetails.value) {
+    length++;
+  }
+  let heightInfo = 0;
+  if (ifShow) {
+    heightInfo = 143;
+  } else {
+    heightInfo = -143;
+  }
+  const sumHeight = heightInfo * length;
+  const realHeight = listHeight - sumHeight;
+  $('.operatePane_content_box_out').height(realHeight);
+};
+
+onBeforeUnmount(() => {
+  sortable.destroy();
+  window.removeEventListener('resize', handleResizeNew);
+});
+</script>
+<style lang="less">
   .vehicle_monitor_operatePane_box {
     position: relative;
     .download-btn {
