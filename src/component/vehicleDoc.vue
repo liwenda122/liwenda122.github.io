@@ -70,30 +70,7 @@ export default {
           name: 'mainPage.vehicleLn',
           value: ''
         },
-        {
-          name: 'mainPage.vehicleSn',
-          value: ''
-        },
-        {
-          name: 'mainPage.vehicleCode',
-          value: ''
-        },
-        {
-          name: 'mainPage.terminalNo',
-          value: ''
-        },
-        {
-          name: 'mainPage.vehicleVin',
-          value: ''
-        },
-        {
-          name: 'mainPage.treeOrg',
-          value: ''
-        },
-        {
-          name: 'mainPage.vehicleModel',
-          value: ''
-        }
+        
       ],
       realInfoList: [
         {
@@ -103,97 +80,7 @@ export default {
           show: true,
           id: 'ElecFuel'
         },
-        {
-          name: 'mainPage.SOC',
-          value: '',
-          show: false,
-          unit: '%',
-          id: 'Electric'
-        },
-        {
-          name: 'mainPage.oilLeft',
-          value: '',
-          show: false,
-          unit: '%',
-          id: 'Fuel'
-        },
-        {
-          name: 'mainPage.newUImileageOfTheDay',
-          value: '',
-          unit: 'km',
-          show: true,
-          id: 'ElecFuel'
-        },
-        {
-          name: 'mainPage.timeOfTheDay',
-          value: '',
-          unit: '',
-          show: true,
-          id: 'ElecFuel'
-        },
-        {
-          name: 'mainPage.distanceMileage',
-          value: '',
-          unit: 'km',
-          show: true,
-          id: 'ElecFuel'
-        },
-        {
-          name: 'mainPage.mainMotorVoltage',
-          value: '',
-          show: false,
-          unit: 'V',
-          id: 'Electric'
-        },
-        {
-          name: 'mainPage.mainMotorCurrent',
-          value: '',
-          show: false,
-          unit: 'A',
-          id: 'Electric'
-        },
-        {
-          name: 'mainPage.mainMotorTemp',
-          value: '',
-          show: false,
-          unit: '℃',
-          id: 'Electric'
-        },
-        {
-          name: 'mainPage.mainMotorRotate',
-          value: '',
-          show: false,
-          unit: 'r/min',
-          id: 'Electric'
-        },
-        {
-          name: 'mainPage.engineOilPressure',
-          value: '',
-          show: false,
-          unit: 'Kpa',
-          id: 'Fuel'
-        },
-        {
-          name: 'mainPage.engineWaterTemp',
-          value: '',
-          show: false,
-          unit: '℃',
-          id: 'Fuel'
-        },
-        {
-          name: 'mainPage.instanceFuelConsumption',
-          value: '',
-          show: false,
-          unit: 'L/h',
-          id: 'Fuel'
-        },
-        {
-          name: 'mainPage.averageOil',
-          value: '',
-          show: false,
-          unit: 'L/100km',
-          id: 'Fuel'
-        }
+        
       ],
       batteryFaultList: [],
       batteryListL: [
