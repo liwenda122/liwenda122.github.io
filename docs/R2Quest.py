@@ -1,69 +1,82 @@
+# -*- coding: GBK -*-
 #! /usr/bin/env python
 # coding=gbk
 #pip install pypiwin32 -i https://pypi.tuna.tsinghua.edu.cn/simple/
+# 2024 01 02 BY å±±ä¸œå¤§æ±‰ äº æ²³å—éƒ‘å·
+# é˜¿å…‹æ‹‰é¹° BOSSåˆ·æ–°åŠ©æ‰‹
 import pythoncom
 import win32com.client
 import threading
-#Î¢ĞÅÏûÏ¢·¢ËÍ·½·¨¿ªÊ¼
+#å¾®ä¿¡æ¶ˆæ¯å‘é€æ–¹æ³•å¼€å§‹
 # usage: send message via wechat
-import requests, sys, json, os, io, time, datetime
+import requests, sys, json, os, io, time
 import urllib3
+from datetime import datetime, timedelta
 urllib3.disable_warnings()
 reload(sys)
-#ÖØĞÂÉèÖÃ×Ö·û¼¯ ·ñÔò»á³öÏÖÖĞÎÄÏûÏ¢ÂÒÂë
+#é‡æ–°è®¾ç½®å­—ç¬¦é›† å¦åˆ™ä¼šå‡ºç°ä¸­æ–‡æ¶ˆæ¯ä¹±ç 
 sys.setdefaultencoding("utf-8")
-###ÆóÒµÎ¢ĞÅ²ÎÊı###
-# CorpidÊÇÆóÒµºÅµÄ±êÊ¶
+###ä¼ä¸šå¾®ä¿¡å‚æ•°###
+# Corpidæ˜¯ä¼ä¸šå·çš„æ ‡è¯†
 Corpid = "wwa4fc311ea775d93e"
-# SecretÊÇ¹ÜÀí×éÆ¾Ö¤ÃÜÔ¿
-Secret = "Rl8ODMG0cSZ_O6SrE1ODA-HeTo_v4XAqAQuToFQ87-8"
-# Ó¦ÓÃID-º£µÁÓ¥
-Agentid = "1000004"
-# token_configÎÄ¼ş·ÅÖÃÂ·¾¶
-path = os.path.abspath(__file__)
-pathDir = os.path.split(path)[0]
-Token_config = os.path.join(pathDir,"token_config.json")
+# Secretæ˜¯ç®¡ç†ç»„å‡­è¯å¯†é’¥-BOSSåˆ·æ–°åŠ©æ‰‹
+Secret = "cDJFOC0TWCcdFKf4DMl_0BX4GD_URzJHwcYBYmpUkoo"
+# åº”ç”¨ID-BOSSåˆ·æ–°åŠ©æ‰‹
+Agentid = "1000007"
+# token_configæ–‡ä»¶æ”¾ç½®è·¯å¾„
+if getattr(sys, "frozen", False):
+    # The application is frozen
+    datadir = os.path.dirname(sys.executable)
+else:
+    # The application is not frozen
+    # Change this bit to match where you store your data files:
+    datadir = os.path.dirname(__file__)
+Token_config = os.path.join(datadir, "token_config.json")
 Quest_config = os.path.join(pathDir,"quest_config.json")
-# Õ½ÇøÅäÖÃÎÄ¼şwar_configÎÄ¼ş·ÅÖÃÂ·¾¶
-#War_config = os.path.join(pathDir,"war_config.json")
-# ÏÈ´ÓÆóÒµÎ¢ĞÅ·şÎñÆ÷»ñÈ¡token,È»ºó±£´æµ½±¾µØ
+# æˆ˜åŒºé…ç½®æ–‡ä»¶war_configæ–‡ä»¶æ”¾ç½®è·¯å¾„
+#War_config = os.path.join(datadir,"war_config.json")
+# å…ˆä»ä¼ä¸šå¾®ä¿¡æœåŠ¡å™¨è·å–token,ç„¶åä¿å­˜åˆ°æœ¬åœ°
 def GetTokenFromServer(Corpid, Secret):
-    """»ñÈ¡access_token"""
-    Url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken"
-    Data = {
-        "corpid": Corpid,
-        "corpsecret": Secret
-    }
-    r = requests.get(url=Url, params=Data, verify=False)
-    #print(r.json())
-    if r.json()['errcode'] != 0:
+    """è·å–access_token"""
+    try:
+        Url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken"
+        Data = {
+            "corpid": Corpid,
+            "corpsecret": Secret
+        }
+    	proxies = {'https': '127.0.0.1:10809'}
+    	r = requests.get(url=Url, params=Data, verify=False)
+        #print(r.json())
+        if r.json()['errcode'] != 0:
+            return False
+        else:
+            #ç¬¬ä¸€æ¬¡è°ƒç”¨å’Œtokenè¿‡æœŸåï¼Œéƒ½ä¼šå†æ¬¡è·å–æ–°çš„tokenå¹¶ä¿å­˜èµ·æ¥
+            Token = r.json()['access_token']
+            file = io.open(Token_config, 'w', encoding='utf-8')
+            file.write(r.text)
+            file.close()
+            return Token
+    except:
+        Log('Network Error cannot get token')
         return False
-    else:
-        #µÚÒ»´Îµ÷ÓÃºÍtoken¹ıÆÚºó£¬¶¼»áÔÙ´Î»ñÈ¡ĞÂµÄtoken²¢±£´æÆğÀ´
-        Token = r.json()['access_token']
-        file = io.open(Token_config, 'w', encoding='utf-8')
-        file.write(r.text)
-        file.close()
-        return Token
-
 def SendMessage(Content):
-    """·¢ËÍÏûÏ¢"""
-    # »ñÈ¡tokenĞÅÏ¢
+    """å‘é€æ¶ˆæ¯"""
+    # è·å–tokenä¿¡æ¯
     try:
         file = io.open(Token_config, 'r', encoding='utf-8')
         Token = json.load(file)['access_token']
         file.close()
     except:
-        #TokenÎª¿Õ »òÕß Token ÒÑ¾­¹ıÆÚ£¬´Ó·şÎñÆ÷ÖØĞÂ»ñÈ¡
+        #Tokenä¸ºç©º æˆ–è€… Token å·²ç»è¿‡æœŸï¼Œä»æœåŠ¡å™¨é‡æ–°è·å–
         Token = GetTokenFromServer(Corpid, Secret)
-    # Partyid 2=º£µÁ2Õ½Çø 8=ÁùÔÂÆ½Ì¨ 9=É½·çÆ½Ì¨ 10=Âíµ°µã 11Ë®Ä¸°µÉ±×é 12 ×Ô¶¯ÈÎÎñ×é
-    Partyid = "12"
-    Subject = 'ÈÎÎñĞ¡ÃØÊé,'
+    # Partyid 2=æµ·ç›—2æˆ˜åŒº 8=å…­æœˆå¹³å° 9=å±±é£å¹³å° 10=é©¬è›‹ç‚¹ 11 æ°´æ¯æš—æ€ç»„ 12ä»»åŠ¡å°ç§˜ä¹¦ 7ç¾å›½æˆ˜åŒº 13 å¾·è«å°”ä¾¦æŸ¥è¿ 15å¾·è«å°”é¹°2.0 21-BOSSåˆ·æ–°åŠ©æ‰‹
+    Partyid = "21"
+    Subject = 'é˜¿å…‹æ‹‰é¹°,'
     Subject = Subject.decode('gbk')
-    # Content ='ÂÖ×Ó¸ç Óöµ½Íæ¼Ò¹¥»÷»Ø³Ç, Çë×¢Òâ²é¿´'
+    # Content ='è½®å­å“¥ é‡åˆ°ç©å®¶æ”»å‡»å›åŸ, è¯·æ³¨æ„æŸ¥çœ‹'
     # sEncodeContent = quote(Content.encode('utf-8').decode('utf-8'))
     # sEncodeSubject = quote(Subject.encode('utf-8').decode('utf-8'))
-    # ·¢ËÍÏûÏ¢
+    # å‘é€æ¶ˆæ¯
     Url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s" % Token
     Data = {
         "toparty": Partyid,
@@ -72,121 +85,66 @@ def SendMessage(Content):
         "text": {"content": Subject + Content},
         "safe": "0"
     }
-    # ensure_ascii=False ·ÀÖ¹ÖĞÎÄÂÒÂë
-    DataJSON = json.dumps(Data)
-    r = requests.post(url=Url, data=DataJSON, verify=False)
+    # ensure_ascii=False é˜²æ­¢ä¸­æ–‡ä¹±ç 
+    try:
+        DataJSON = json.dumps(Data)
+        proxies = {'https': '127.0.0.1:10809'}
+        r = requests.post(url=Url, data=DataJSON, verify=False)
 
-    # Èç¹û·¢ËÍÊ§°Ü£¬½«ÖØÊÔÈı´Î
-    n = 1
-    while r.json()['errcode'] != 0 and n < 4:
-        n = n + 1
-        Token = GetTokenFromServer(Corpid, Secret)
-        if Token:
-            Url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s" % Token
-            r = requests.post(url=Url, data=json.dumps(Data), verify=False)
-            #print(r.json())
+        # å¦‚æœå‘é€å¤±è´¥ï¼Œå°†é‡è¯•2æ¬¡
+        n = 1
+        while r.json()['errcode'] != 0 and n < 3:
+            n = n + 1
+            Token = GetTokenFromServer(Corpid, Secret)
+            if Token:
+                Url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s" % Token
+                r = requests.post(url=Url, data=json.dumps(Data), verify=False)
+                # print(r.json())
 
-    return r.json()
-#Î¢ĞÅÏûÏ¢·¢ËÍ·½·¨½áÊø
+        return r.json()
+    except:
+        Log('NetWork Error cannot send message')
+#å¾®ä¿¡æ¶ˆæ¯å‘é€æ–¹æ³•ç»“æŸ
 def MainProcess(name):
     file = io.open(Quest_config, 'r', encoding='utf-8')
     file_obj = json.load(file)
+	# BBåç§° çŒ›è™æŒ‡æŒ¥å®˜
     quest_name = file_obj['name']
-    quest_cost = int(file_obj['time'])
+	# BBä¸Šæ¬¡åˆ·æ–°æ—¶é—´-åˆå§‹åˆ·æ–°æ—¶é—´
+	quest_last_time = datetime.strptime(file_obj['lastTime'], "%H:%M:%S")
+	# è·å–BBåˆ·æ–°é—´éš”-çŒ›è™æŒ‡æŒ¥å®˜ 15525ç§’
+    quest_duration = int(file_obj['duration'])
     file.close()
-    # ×öÈÎÎñµÄ½ÇÉ«Ãû
-    #quest_name = input('ÇëÊäÈëÒª×Ô¶¯×öÖØ¸´ÈÎÎñµÄ½ÇÉ«Ãû,¿ÉÒÔÊÖ¶¯ÊäÈë£¬Ò²¿ÉÒÔÓÒ¼üğ¤Ìù£¬È»ºó°´»Ø³µ¼ü£º')
-    # µ¥¸öÈÎÎñºÄÊ±£¨·ÖÖÓ£©
-    #quest_cost = int(input('ÇëÊäÈëÍê³Éµ¥¸öÈÎÎñËùĞèÒªµÄÊ±¼ä£¬µ¥Î»Îª·ÖÖÓ£¬È»ºó°´»Ø³µ¼ü£º'))
-    # ÈÎÎñ×ÜÊıÁ¿£¨°üº¬Íê³ÉÈÎÎñºóÈ¥¹Ò»úµãµÄÅäÖÃ£© Ìì¿Õ8¸ö£¬Ó¯ÔÂ2¸ö Ç°ÏßÊÇ×îºóÒ»¸ö
-    quest_count = 10
-    pythoncom.CoInitialize() #±ÜÃâ£º(-2147221008, 'ÉĞÎ´µ÷ÓÃ CoInitialize¡£', None, None)
-    dm = win32com.client.Dispatch('dm.dmsoft')  # µ÷ÓÃ´óÄ®²å¼ş
-    print(dm.ver())  # Êä³ö°æ±¾ºÅ
-    dm_ret = dm.Reg("liwenda1225ef17facb597b0636c09c5e476f69405", "") # ÇëÊ¹ÓÃ×Ô¼ºµÄ×¢²áÂë
-    print(dm_ret)
+    pythoncom.CoInitialize() #é¿å…ï¼š(-2147221008, 'å°šæœªè°ƒç”¨ CoInitializeã€‚', None, None)
     time.sleep(3)
-    i = 0
-    while (i < quest_count):
-        hwnd = dm.EnumWindow(0, quest_name, "", 1 + 4 + 8 + 16)
-        Log(quest_name)
-        Log("µ±Ç°ÕıÔÚ½øĞĞµÄÈÎÎñĞòºÅÊÇ:".decode("gbk"))
-        Log(i+1)
-        # Log(type(quest_name))
-        # data = quest_name.encode('gbk') + ",ÒÑÍê³É½ñÈÕÖØ¸´ÈÎÎñ!"
-        # data = data.decode('gbk')
-        # SendMessage(data)
-
-        if len(hwnd) > 0:
-            hwnds = str(hwnd).split(",")
-            cur_hwnd = hwnds[0]
-            dm_ret = dm.SetWindowState(cur_hwnd, 12)
-            # dm.SetSimMode(2) dx.mouse.position.lock.api ÔÚ×ÓÏß³ÌÖĞÊ¹ÓÃlock »á·µ»Ø-16 °ó¶¨Ê§°Ü´íÎó£¬¶øÇÒ°ó¶¨Ê±¼ä±È½Ï³¤
-            dm_ret = dm.BindWindowEx(cur_hwnd, "normal", "windows3", "normal", "", 0)
-            #dm_ret = dm.BindWindowEx(cur_hwnd, "normal", "dx.mouse.position.lock.api | dx.mouse.position.lock.message | dx.mouse.clip.lock.api | dx.mouse.input.lock.api | dx.mouse.state.api | dx.mouse.api | dx.mouse.cursor", "normal", "", 1)
-            # Log(dm.GetLastError())
-            dm.Delay(1000)
-            data = "ÆïÊ¿¹Ò°ó¶¨½á¹û:"
-            data = data.decode('gbk')
-            Log(data)
-            Log(dm_ret)
-            # 1 µã»÷ÏÂÀ­¿ò
-            # Êó±êÒÆ¶¯µ½ ÏÂÀ­¿ò»ù×¼×ø±ê £¬µã»÷ÏÂÀ­¿ò
-            # TODO OK ÏÂÀ­¼ıÍ·µÄÎ»ÖÃ
-            basePosX = 203
-            basePosY = 524
-            # TODO OK µ±Ç°ÅäÖÃ ÖĞÏßµÄÎ»ÖÃ
-            basePosX2 = 116
-            basePosY2 = 532
-            dm.MoveTo(basePosX, basePosY)
-            dm.Delay(200)
-            dm.LeftClick()
-            dm.Delay(1000)
-            j = 0
-            while (j < i + 1):
-                dm.SetWindowState(cur_hwnd, 12)
-                dm.KeyPress(40)
-                dm.Delay(500)
-                j = j + 1
-            dm.SetWindowState(cur_hwnd, 12)
-            dm.Delay(500)
-            dm.KeyPress(13)
-            # ¸ÄÎªÊ¹ÓÃ¼üÅÌ²Ù×÷
-            # 6 TODO µã»÷¶ÁÈ¡ÅäÖÃ 370 525
-            loadConfigPosX = 256
-            loadConfigPosY = 525
-            dm.Delay(300)
-            dm.MoveTo(loadConfigPosX, loadConfigPosY)
-            dm.Delay(400)
-            dm.LeftClick()
-            dm.Delay(200)
-            dm.LeftClick()
-            dm.Delay(200)
-
-            # 7 µã»÷±£´æÅäÖÃ 370 525
-            confirmPosX = 370
-            confirmPosY = 525
-            dm.MoveTo(confirmPosX, confirmPosY)
-            dm.Delay(400)
-            dm.LeftClick()
-            dm.Delay(200)
-            dm.LeftClick()
-            dm.Delay(200)
-
-            dm_ret = dm.UnBindWindow()
-        else:
-            hwnds = []
-            #µ±Ç°½ÇÉ«Ã»ÓĞÍâ¹Ò´°¿Ú£¬ÎŞ·¨´¦Àí
-        if i == quest_count - 1:
-            # ×îºóÒ»¸öÓ¯ÔÂÇ°Ïß Ê¹ÓÃ3±¶ÏûºÄÊ±¼ä
-            time.sleep(quest_cost * 60 * 3)
-        else:
-            time.sleep(quest_cost * 60)
-        i=i+1
-        if i == quest_count:
-            data = quest_name.encode('gbk') + ",ÒÑÍê³É½ñÈÕÖØ¸´ÈÎÎñ!"
-            data = data.decode('gbk')
-            SendMessage(data)
+	# è®¡ç®—BOSSä¸‹æ¬¡åˆ·æ–°æ—¶é—´
+	final_time = quest_last_time + timedelta(seconds=quest_duration)
+	quest_next_time = final_time.strftime("%H:%M:%S")
+	data = "çŒ›è™æŒ‡æŒ¥å®˜ä¸‹æ¬¡åˆ·æ–°æ—¶é—´ï¼š".decode("gbk") + quest_next_time
+	Log(data)
+    while (True):
+		# è·å–å½“å‰æ—¶é—´
+		current_time = datetime.now()
+		current_time_str = current_time.strftime("%H:%M:%S")
+		data = "å½“å‰æ—¶é—´ï¼š".decode("gbk") + current_time_str
+		Log(data)
+		data = "çŒ›è™æŒ‡æŒ¥å®˜ä¸‹æ¬¡åˆ·æ–°æ—¶é—´ï¼š".decode("gbk") + quest_next_time
+		Log(data)
+		# åˆ¤æ–­æ˜¯å¦éœ€è¦æé†’(å¦‚æœcurrent_time + 10åˆ†é’Ÿ > final_time åˆ™æé†’"BOSSå³å°†åœ¨10åˆ†é’Ÿååˆ·æ–°')
+		if current_time + timedelta(minutes=10) > final_time:
+			data = "çŒ›è™æŒ‡æŒ¥å®˜å³å°†åœ¨10åˆ†é’Ÿååˆ·æ–°, åˆ·æ–°æ—¶é—´ä¸ºï¼š".decode("gbk") + quest_next_time
+			Log(data)
+			SendMessage(data)
+		if current_time > final_time:
+			quest_last_time = final_time
+			# 60ç§’æ˜¯æ‰“æ­»BBçš„å¹³å‡æ—¶é—´å·®
+			diff = quest_duration + 60
+			final_time = quest_last_time + timedelta(seconds=diff)
+			quest_next_time = final_time.strftime("%H:%M:%S")
+			data = "çŒ›è™æŒ‡æŒ¥å®˜å·²ç»åˆ·æ–°, ä¸‹æ¬¡åˆ·æ–°æ—¶é—´å·²æ›´æ–°ï¼Œåˆ·æ–°æ—¶é—´ä¸ºï¼š".decode("gbk") + quest_next_time
+			Log(data)
+			SendMessage(data)
+		time.sleep(60)
 def Log(data):
     tim = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     #print(tim)
