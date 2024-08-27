@@ -47,7 +47,7 @@
     "vue-popper": "^0.3.8",
     "vue-resource": "^1.0.3",
     "vue-template-compiler": "^2.1.0",
-    "webpack": "^1.13.3",
+    "webpack": "^5.94.0",
     "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
